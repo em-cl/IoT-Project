@@ -1,0 +1,17 @@
+﻿<div class="top-container">
+	<h1>@HeaderText</h1>
+	<p>@HeaderSubText</p>
+</div>
+
+<div class="header sticky-top">
+	<h2>@SubHeaderText</h2>
+</div>
+
+@code {
+	[Parameter]
+	public string HeaderText { get; set; }
+	[Parameter]
+	public string HeaderSubText { get; set; }
+	[Parameter]
+	public string SubHeaderText { get; set; }
+}

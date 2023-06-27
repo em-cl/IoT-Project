@@ -1,0 +1,412 @@
+﻿@using MediatR
+@using System.Text
+@using System.Collections.ObjectModel
+@using System.Diagnostics
+@using Application.PicoWCommunication.Events
+@using Application.SmtpMail.Commands
+@using Domain.Entities
+@using Domain.Shared
+@using Infrastructure.Services.MailServices
+@inject IMailSenderService MailSenderService
+@implements INotificationHandler<BatchSavedEvent>
+@using Org.BouncyCastle.Crypto
+
+<p>@_notification</p>
+<div class="info-box-static-with-margin" style="width: 1292px">
+	<span>Measurements cache @(_cacheCount - 1) / @(CacheSize - 1)</span>
+	<input style="width: 100%;" class="custom-range"
+		   type="range" @bind="@CacheSize" min="2" max="50" step="1" bind:event="oninput" />
+</div>
+
+<div class="flex-container">
+	<div>
+		<div class="info-box-static-with-margin">
+			@if (TemperatureUpperBound >= TemperatureLowerBound)
+			{
+				<span style="margin-bottom: 5px;"><i class="fa fa-arrow-up" style="color:white" /> @TemperatureUpperBound, 	<i class="fa fa-arrow-down" style="color:white" /> @TemperatureLowerBound</span>
+			}
+			else
+			{
+				<span style="margin-bottom: 5px;"><i class="fa fa-arrow-up" style="color:white" /> @TemperatureLowerBound, 	<i class="fa fa-arrow-down" style="color:white" /> @TemperatureUpperBound</span>
+			}
+			<input style="width: 100%; background: yellow" class="custom-range"
+			       type="range" @bind="@TemperatureUpperBound" min="0" max="50" step="1" bind:event="oninput" />
+
+			<input style="width: 100%; background: #D6006E" class="custom-range"
+			       type="range" @bind="@TemperatureLowerBound" min="0" max="50" step="1" bind:event="oninput" />
+		</div>
+		<div class="label-container">
+			<div class="rotated-label">@HeadingOne</div>
+		</div>
+		<div class="info-box">
+			<i class="fa fa-sun-o" style="color: white"/>
+			Temperature
+		</div>
+		<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" class="chart">
+			<g>
+
+				@foreach (var yValue in GenerateYscale(50, 500, 800, 0))
+				{
+					@yValue
+				}
+				@if (_pointsTemperature != null)
+				{
+					@foreach (var point in _pointsTemperature)
+					{
+						@point
+					}
+				}
+				<polygon points="@_tempPolygon"
+				         fill="#28BBA2"
+				         opacity="0.4" />
+				<polyline fill="none"
+				          stroke="#28BBA2"
+				          stroke-width="2"
+				          points="@_temperature">
+				</polyline>
+				@foreach (var line in PaintNotifyLines(
+					TemperatureUpperBound, TemperatureLowerBound, 50, 500, 800, 0))
+				{
+					@line
+				}
+			</g>
+		</svg>
+	</div>
+
+	<div>
+		<div class="info-box-static-with-margin">
+			@if (HumidityUpperBound >= HumidityLowerBound)
+			{
+				<span>
+					<i class="fa fa-arrow-up" style="color: white"/> @HumidityUpperBound, <i class="fa fa-arrow-down" style="color:white" /> @HumidityLowerBound
+				</span>
+			}
+			else
+			{
+				<span>
+					<i class="fa fa-arrow-up" style="color: white"/> @HumidityLowerBound, <i class="fa fa-arrow-down" style="color:white" /> @HumidityUpperBound
+				</span>
+			}
+
+			<input style="width: 100%; background: yellow" class="custom-range"
+			       type="range" @bind="@HumidityUpperBound" min="0" max="90" step="1" bind:event="oninput" />
+			<input style="width: 100%; background: #D6006E" class="custom-range"
+			       type="range" @bind="@HumidityLowerBound" min="0" max="90" step="1" bind:event="oninput" />
+		</div>
+		<div class="label-container">
+			<div class="rotated-label">@HeadingTwo</div>
+		</div>
+		<div class="info-box">
+			<i class="fa fa-tint" style="color:white"/>
+			Humidity
+		</div>
+		<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" class="chart">
+			<g>
+				@foreach (var yValue in GenerateYscale(
+					90, 500, 800, 7))
+				{
+					@yValue
+				}
+				@if (_pointsHumidity != null)
+				{
+					@foreach (var point in _pointsHumidity)
+					{
+						@point
+					}
+				}
+				<polygon points="@_humPolygon"
+				         fill="#28BBA2"
+				         opacity="0.4" />
+
+				<polyline fill="none"
+				          stroke="#28BBA2"
+				          stroke-width="2"
+				          points="@_humidity">
+				</polyline>
+				@foreach (var line in PaintNotifyLines(
+					HumidityUpperBound, HumidityLowerBound, 90, 500, 800, 12))
+				{
+					@line
+				}
+			</g>
+		</svg>
+	</div>
+</div>
+<br/>
+<div class="header sticky-top">
+	<h2>HW-040.</h2>
+</div>
+<div class="flex-container">
+	<div>
+		<div class="label-container">
+			<div class="rotated-label">Number of measurements</div>
+		</div>
+		<div class="info-box">
+			<i class="fa fa-clock-o" style="color:white"/>
+			Requests
+		</div>
+		<BarChartComponent Data="@BarCharData" Height="500" Width="1600"/>
+		<div class="info-box">
+			Realtime deviation: @_requestDelay milliseconds.
+		</div>
+	</div>
+</div>
+
+@code {
+
+	[CascadingParameter]
+	public IMediator _mediator { get; set; }
+
+	#region Inputs
+	[Parameter]
+	public string HeadingOne { get; set; } = string.Empty;
+	[Parameter]
+	public string HeadingTwo { get; set; } = string.Empty;
+
+	public static int CacheSize { get; set; } = 15;
+	public static int TemperatureUpperBound { get; set; } = 35;
+	public static int TemperatureLowerBound { get; set; } = 15;
+	public static int HumidityUpperBound { get; set; } = 60;
+	public static int HumidityLowerBound { get; set; } = 20;
+	#endregion
+
+	private int _requestDelay;
+	public static DateTime NotificationTimeout { get; set; }
+	public List<(DateTime, int)> BarCharData { get; set; } = new();
+
+	#region Subscribed data
+	private string _tempPolygon = string.Empty;
+	private string _temperature = string.Empty;
+	private string _humPolygon = string.Empty;
+	private string _humidity = string.Empty;
+	private string _times = string.Empty;
+	private string _notification = string.Empty;
+	
+	private int _cacheCount;
+
+	private List<RenderFragment> _pointsHumidity = new();
+	private List<RenderFragment> _pointsTemperature = new();
+	#endregion
+
+	protected override async Task OnInitializedAsync()
+	{
+		OnBatchSaved += async (sender, changed) =>
+		{
+			_times = changed.Time;
+			var separatedTimes = _times.Split(' ');
+			_cacheCount = separatedTimes.Length;
+			_temperature = changed.TemperaturePolyLine;
+			_pointsTemperature = GeneratePlotsWithTimeFragments(_temperature, separatedTimes);
+			_humidity = changed.HumidityPolyLine;
+			_pointsHumidity = GeneratePlotsWithTimeFragments(_humidity, separatedTimes);
+			_tempPolygon = "0,0 " + _temperature + " 800,0";
+			_humPolygon = "0,0 " + _humidity + " 800,0";
+			BarCharData = PicoWDataConversion.FifoBatchHistory.ToList();
+			_requestDelay =Math.Abs(BarCharData[^1].Item1.Millisecond - changed.Measurements[^1].Time.Millisecond);
+		
+			var notification = await SendNotificationMailIfNeeded(
+				changed.Measurements, "emil.clementz@icloud.com");
+
+			if (!string.IsNullOrEmpty(notification) && notification != _notification)
+			{
+				_notification = notification;
+			}
+
+			await InvokeAsync(() => StateHasChanged());
+		};
+
+		//var result = await _mediator.Send(new SendNotificationMailCommand("emil.clementz@icloud.com", "Pico dashboard started", $"{DateTime.Now}"));
+
+		await base.OnInitializedAsync();
+	}
+
+	#region Events
+	public class BatchSavedArgs : EventArgs
+	{
+		public string TemperaturePolyLine { get; set; }
+		public string HumidityPolyLine { get; set; }
+		public string Time { get; set; }
+		public int batchSize { get; set; }
+		public List<Measurement> Measurements { get; set; }
+	}
+
+	public delegate Task AsyncEventHandler(object sender, EventArgs e);
+
+	public static event EventHandler<BatchSavedArgs> OnBatchSaved;
+
+	public async Task Handle(BatchSavedEvent notification, CancellationToken cancellationToken)
+	{
+		var polyLine = notification.Measurements
+			.OrderBy(t => t.Time)
+			.CacheData(CacheSize,10)
+			.CreatePolyLineFromMeasurements(800, 500);
+
+		OnBatchSaved?.Invoke(
+			this, new BatchSavedArgs
+				{
+					TemperaturePolyLine = polyLine[0],
+					HumidityPolyLine = polyLine[1],
+					Time = polyLine[2],
+					Measurements = notification.Measurements
+				});
+	}
+
+	private async Task<string> SendNotificationMailIfNeeded(
+		List<Measurement> measurements, string emailTo)
+	{
+		if (NotificationTimeout >= DateTime.Now) return string.Empty;
+
+		int maxTemp = Math.Max(TemperatureUpperBound, TemperatureLowerBound),
+			minTemp = Math.Min(TemperatureUpperBound, TemperatureLowerBound),
+			maxHum = Math.Max(HumidityUpperBound, HumidityLowerBound),
+			minHum = Math.Min(HumidityUpperBound, HumidityLowerBound);
+
+		var subject = string.Empty;
+
+		foreach (var measurement in measurements)
+		{
+			var body = $"<p>Humidity% {measurement.Humidity}, Low: {minHum} High: {maxHum}</p> <br/>"
+								+ $"<p>Temperature degrees celsius {measurement.Temperature}, Low: {minTemp} High: {maxTemp}<p/>";
+
+			if (measurement.Humidity >= maxHum)
+				subject = "Humidity High Warning";
+
+			if (measurement.Humidity <= minHum)
+				subject = "Humidity Dry Warning";
+
+			if (measurement.Temperature >= maxTemp)
+				subject = "Temperature Warm Warning";
+
+			if (measurement.Temperature < minTemp)
+				subject = "Temperature Cold Warning";
+
+			if (string.IsNullOrEmpty(subject))
+				continue;
+
+			NotificationTimeout = DateTime.Now.AddMinutes(3);
+
+			if (await MailSenderService.SendAsync(emailTo, subject, body))
+				return $"Notification sent! \nsubject: {subject}";
+
+			break;
+		}
+
+		return string.Empty;
+	}
+
+	#endregion
+
+	#region Render fragment generators
+	private List<RenderFragment> GeneratePlotsWithTimeFragments(
+		string polyline, string[] times)
+	{
+		var coordinates = polyline.Split(' ');
+
+		var index = 0;
+
+		return (from coordinate in coordinates
+				where !string.IsNullOrEmpty(coordinate)
+				select coordinate.Split(',')
+			into xAndy
+				select (RenderFragment)(builder =>
+				{
+					builder.OpenElement(0, "g");
+
+					builder.OpenElement(1, "circle");
+					builder.AddAttribute(2, "cx", xAndy[0]); // X-coordinate
+					builder.AddAttribute(3, "cy", xAndy[1]); // Y-coordinate
+					builder.AddAttribute(4, "r", 3); // Radius
+					builder.AddAttribute(5, "fill", "lightgray");
+					builder.CloseElement();
+					if (index <= times.Length - 1)
+					{
+						if (!string.IsNullOrEmpty(times[index]))
+						{
+							builder.OpenElement(6, "text");
+							builder.AddAttribute(7, "x", xAndy[0]);
+							builder.AddAttribute(8, "y", 500);
+							builder.AddAttribute(9, "font-size", "10px");
+							builder.AddAttribute(10, "fill", "lightgray");
+							builder.AddContent(11, times[index].Split(":")[1]);
+							builder.CloseElement();
+						}
+						index++;
+					}
+
+					builder.CloseElement();
+				})).ToList();
+	}
+
+	private List<RenderFragment> PaintNotifyLines(
+		int lineOne, int lineTwo, int scale, int height, int width, int offsetY)
+	{
+		var lines = new List<RenderFragment>();
+		var yScaleFactor = height / scale;
+
+		lines.Add(builder =>
+		{
+
+			builder.OpenElement(0, "g");
+
+			builder.OpenElement(1, "line");
+			builder.AddAttribute(2, "x1", 15);
+			builder.AddAttribute(3, "y1", (lineOne * yScaleFactor) + offsetY);
+			builder.AddAttribute(4, "x2", width);
+			builder.AddAttribute(5, "y2", (lineOne * yScaleFactor) + offsetY);
+			builder.AddAttribute(6, "stroke", "yellow");
+			builder.AddAttribute(7, "stroke-width", 2);
+			builder.CloseElement();
+
+			builder.OpenElement(1, "line");
+			builder.AddAttribute(2, "x1", 15);
+			builder.AddAttribute(3, "y1", (lineTwo * yScaleFactor) + offsetY);
+			builder.AddAttribute(4, "x2", width);
+			builder.AddAttribute(5, "y2", (lineTwo * yScaleFactor) + offsetY);
+			builder.AddAttribute(6, "stroke", "#D6006E");
+			builder.AddAttribute(7, "stroke-width", 2);
+			builder.CloseElement();
+
+			builder.CloseElement();
+		});
+
+		return lines;
+	}
+
+	private List<RenderFragment> GenerateYscale(
+		int scale, int height, int width, int offsetY)
+	{
+		var yScale = new List<RenderFragment>();
+		var yScaleFactor = height / scale;
+		for (int i = scale; i >= 0; i -= 5)
+		{
+			int index = i;
+			yScale.Add(builder =>
+			{
+				builder.OpenElement(0, "g");
+
+				builder.OpenElement(1, "line");
+				builder.AddAttribute(2, "x1", 15);
+				builder.AddAttribute(3, "y1", ((index + 1) * yScaleFactor) + offsetY);
+				builder.AddAttribute(4, "x2", width);
+				builder.AddAttribute(5, "y2", ((index + 1) * yScaleFactor) + offsetY);
+				builder.AddAttribute(6, "stroke", "lightgray");
+				builder.AddAttribute(7, "stroke-dasharray", "4 4");
+				builder.CloseElement();
+
+				builder.OpenElement(0, "text");
+				builder.AddAttribute(1, "x", 2);
+				builder.AddAttribute(2, "y", ((index + 1) * yScaleFactor) + offsetY + 3);
+				builder.AddAttribute(3, "font-size", "10px");
+				builder.AddAttribute(4, "fill", "lightgray");
+				builder.AddContent(3, index);
+				builder.CloseElement();
+
+				builder.CloseElement();
+
+			});
+		}
+		return yScale;
+	}
+	#endregion
+}
+

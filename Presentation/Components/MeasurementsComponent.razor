@@ -1,0 +1,35 @@
+﻿@using Domain.Entities
+@using Domain.Repositories
+@inject IMeasurementRepo MeasurementRepo
+
+<br />
+<table class="clean-table">
+	<thead>
+		<tr>
+			<th>Date</th>
+			<th>Humidity %</th>
+			<th>Temperature Celsius</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var measurement in Data)
+		{
+			<tr>
+				<td>@measurement.Time.ToString("yyyy-MM-dd HH:mm:ss")</td>
+				<td>@measurement.Humidity</td>
+				<td>@measurement.Temperature</td>
+			</tr>
+		}
+	</tbody>
+</table>
+<br />
+
+@code {
+	[Parameter]
+	public List<Measurement> Data { get; set; }
+	protected override void OnParametersSet()
+	{
+		this.StateHasChanged();
+		base.OnParametersSet();
+	}
+}

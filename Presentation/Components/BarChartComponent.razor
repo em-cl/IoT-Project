@@ -1,0 +1,77 @@
+﻿<svg width="@Width"
+     height="@Height"
+     viewBox="0 0 1600 500"
+     xmlns="http://www.w3.org/2000/svg"
+     class="chart"
+     style="width: 1290px; height: 450px">
+	
+	@foreach (var (xTime, ySize) in Data)
+	{
+		var xPosition = (int)((xTime - _referenceTime).TotalSeconds * _barWidth);
+		<g>
+			<rect x="@xPosition"
+			      y="@((int)(Height - ySize * _heightScale))"
+			      width="@(20)"
+			      height="@((int)(ySize * _heightScale))"
+			      opacity="0.6"
+			      fill="#28BBA2" 
+			/>
+			
+			<line x1="@((int)(xPosition + 10))"
+			      y1="0" 
+			      x2="@((int)(xPosition + 10))" 
+			      y2="500" 
+			      stroke="lightgray" />
+
+			<text x="@((int)(xPosition + 5))"
+			      y="@(-10)"
+			      fill="lightgray"
+			      font-size="12">
+				@ySize
+			</text>
+
+			<text x="@((int)(xPosition + 3))"
+			      y="@(Height+20)"
+			      fill="lightgray"
+			      font-size="12">
+				@xTime.Second
+			</text>
+		</g>
+
+	}
+</svg>
+
+
+
+@code {
+	[Parameter]
+	public List<(DateTime, int)> Data { get; set; }
+	[Parameter]
+	public int Height { get; set; }
+	[Parameter]
+	public int Width { get; set; }
+
+	private double _barWidth;
+	private double _heightScale;
+	private DateTime _referenceTime;
+
+	protected override void OnParametersSet()
+	{
+		if (Data.Any() && Height != 0 && Width != 0)
+		{
+			CalculateScales();
+		}
+		base.OnParametersSet();
+	}
+
+	private void CalculateScales()
+	{
+		_referenceTime = Data[0].Item1;
+		_barWidth = (Data.Count() == 1)
+			? 1
+			: Width / (Data[^1].Item1 - _referenceTime).TotalSeconds;
+		var maxDataValue = Data.Count > 0 ? Data.Max(t => t.Item2) : 1;
+		_heightScale = (double)Height / maxDataValue;
+		StateHasChanged();
+	}
+}

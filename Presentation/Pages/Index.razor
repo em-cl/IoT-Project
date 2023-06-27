@@ -1,0 +1,73 @@
+﻿@page "/"
+@using Presentation.Components
+@using MediatR
+@using Application.SmtpMail.Commands
+@using Domain.DataTransferObjects
+@using Domain.Entities
+@using Domain.Repositories
+@inject IMediator Mediator
+@inject IMeasurementRepo MeasurementRepo
+@inject ITraceLogRepo TraceLogRepo
+<div class="card bg-transparent container-fluent">
+	<div class="sticky-top"
+	     style="max-width: 100%;
+	            background-color: #1D2027; 
+	            z-index: 99; 
+	            margin-top: -3px;">
+
+		<h3 class=" text-white">Raspberry pie Pico-W demo.</h3>
+
+		<p class="card-text text-white">-= By Emil Clementz. =-</p>
+
+	</div>
+	<Spiral/>
+	<StickyHeaderComponent HeaderText="Dashboard."
+						   HeaderSubText="Scroll down to see the sensors measurements."
+						   SubHeaderText="DHT11." />
+	<CascadingValue Value="@_mediator">
+		<LineChart HeadingOne="Degrees celcius" HeadingTwo="Percentage %"/>
+	</CascadingValue>
+	<div class="parallax">
+		
+	</div>
+	<StickyHeaderComponent HeaderText="Database."
+	                       HeaderSubText="Latest saved measurements and logs."
+	                       SubHeaderText="Logs" />
+	<button class="btn btn-light" @onclick="Update" >Update</button>
+	<Logs Data="@_logs"/>
+	<div class="header sticky-top">
+		<h2>Measurements</h2>
+	</div>
+	<button class="btn btn-light" @onclick="Update">Update</button>
+	<MeasurementsComponent Data="@_measurements"/>
+</div>
+
+@code{
+	private readonly object _lock = new object();
+	private IMediator _mediator;
+	private List<Measurement> _measurements = new ();
+	private List<TraceLogDto> _logs = new ();
+	protected override async Task OnInitializedAsync()
+	{
+		_mediator = Mediator;
+		await Update();
+		await base.OnInitializedAsync();
+	}
+
+
+	private async Task Update()
+	{
+		_logs.Clear();
+		await foreach (var log in TraceLogRepo.GetLastLogs(15))
+		{
+			_logs.Add(log);
+		}
+		_measurements.Clear();
+		await foreach (var measurement in MeasurementRepo
+			.GetLastMeasurementsAsyncEnumerable(15))
+		{
+			_measurements.Add(measurement);
+		}
+	}
+	
+}

@@ -1,0 +1,35 @@
+﻿@using Domain.Repositories
+@using Domain.DataTransferObjects
+<br/>
+<table class="clean-table">
+	<thead>
+	<tr>
+		<th>Date</th>
+		<th>Component</th>
+		<th>Message</th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var traceLog in Data)
+	{
+		<tr>
+			<td>@traceLog.LoggedDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+			<td>@traceLog.ComponentName</td>
+			<td>@traceLog.Message</td>
+		</tr>
+	}
+	</tbody>
+</table>
+<br/>
+
+@code {
+	[Parameter]
+	public List<TraceLogDto> Data { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		this.StateHasChanged();
+		base.OnParametersSet();
+	}
+
+}
