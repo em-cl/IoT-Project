@@ -389,3 +389,5 @@ FodyWeavers.xsd
 /src/ISPForskare/ISPForskare/Models/Dto/StudyPlanDtos/Seminars/ProgressionSeminarsDtosNew.cs
 
 web.config
+
+WebAPI/appsettings.json
