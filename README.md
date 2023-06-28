@@ -569,8 +569,37 @@ This method converts the measurements to polyline used in the line charts
 
 		}
 ```
+## Presenting the data
 
 
+>Describe the presentation part. How is the dashboard built? How long is the data preserved in the database?
+
+**The dashboard**
+
+>DHT11
+
+The green areas indicates the changes in temperature and humidity, the yellow and magenta lines shows the adjustable thresholds where automatic notifications are sent via mail when measurments exceeds them. the cache size "number of measurements" is adjustable. There is a second notificationhandler that triggers on the  BatchSaved notification published event, that logs to debug output and console.  
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/0389999e-1730-4b56-abc4-ef3c61c115da)
+
+>HW-040.
+
+The dash board for the rotoary encoder shows X time and Y number of measurements.
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/bd3ce31e-9370-4152-9273-281d462152a3)
+
+**Database**
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/706d1931-d30e-414b-b145-cda8ddbd99db)
+
+I used the Unit of Work design pattern with the Repository designpattern for the data access code. 
+
+Data is saved  every time a request arrives before it is displayed to the dashboard as mentioned earlier with a maximum speed of once every 3 seconds. i added this limitation because indoor temperature and humidity take a couple of seconds to change to not waste computing power.
+I think less frequent measurements would also be fine for this project but the debugging would take longer and the dashboard will take a while to fill up while testing so i left it fast.  
+I have not built functionality to periodically remove data this is suggested for the continued development of the project and would need to be added in order to save space.
+
+
+
+* How often is data saved in the database.
+* Explain your choice of database.
+* Automation/triggers of the data.
 
 
 
