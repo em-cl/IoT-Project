@@ -216,3 +216,9 @@ use with nugets packages: Mock and Fluent Assertions.
     - if you dont have a  static ip adress you can run ncpa.cpl if you whant to and add one.
 
 >The ip and port needs to match the requests from the pico to the WebApi
+
+## Connecting the sensors
+this diagram shows how to connect the sensors to the pico. optionally use the Male to Female cables for the `rotary encoder`.
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/c1787050-2960-4e97-9076-991082ef20ea)
+
+
