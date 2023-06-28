@@ -237,10 +237,12 @@ the recomended docker image is linux if you want to try docker support.
 ## Code examples
 From the pico WH to the dashboard a http get request are sent containing data from the sensors. 
 The wireless protocol used is Wifi.
-The transport layer protocol used is TCP
-the tcp socket is used to send http Get requests to the rest api
+The transport layer protocol used is TCP.
+
+**Getting sensor data**
+Micro Python code
 Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request request is sent. this is the code for the rotary encoder.
-```
+```Python
 def rotaryComponent():
     #constants
     DT = 0 
@@ -267,8 +269,8 @@ def rotaryComponent():
     _clockPin.irq(handler=rotaryChange, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING)
     _directionPin.irq(handler=rotaryChange, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING)
 ```
-This is the life loop of the Pico. it syncs time from a timeserver to stamp measurements, and builds the json string.
-```
+This is the life loop of the Pico. it syncs time from a timeserver to stamp measurements, and builds the json sends.
+```Python
 dataList = []
 run = True
 def temperature_and_humidity_sensor():
@@ -320,7 +322,159 @@ def temperature_and_humidity_sensor():
         
         time.sleep(3)
 ```
-i chooose to use
+
+**Data flow**
+The TCP socket is used to send http Get requests to the Rest API over the wifi.
+The Rest Api recives the json array and starts a command using the data.   
+```C#
+	` [HttpGet("Test")]
+		// GET: 
+		public async Task<ActionResult> Test([FromQuery] string data){
+			
+			try
+			{
+				var measurements = await _mediator.Send(new SaveBatchCommand(data));
+			}
+			catch (Exception ex)
+			{
+				await _mediator.Send(new LogErrorCommand(ex,
+					(GetType().DeclaringType?.Name ?? string.Empty)
+					+ "." + nameof(SaveBatch)));
+
+				return BadRequest("Failed to complete data data conversion for display.");
+			}
+
+			return Ok(data);
+		}
+```
+The string is deserialized to data tranfer objects and converted domain objects, then checked for duplicates and saved in the database. if every thing was correct the new  measurements are published in memory as a MediatR notification.
+```C#
+	public record SaveBatchCommand (string Data) : IRequest<IEnumerable<Measurement>>
+	{
+		public class Handler : IRequestHandler<SaveBatchCommand, IEnumerable<Measurement>>
+		{
+
+			private readonly IUnitOfWork _unitOfWork;
+			private readonly IPublisher _publisher;
+			public Handler(
+				IUnitOfWork unitOfWork,
+				IPublisher publisher)
+			{
+				_unitOfWork = unitOfWork;
+				_publisher = publisher;
+			}
+			public async Task<IEnumerable<Measurement>> Handle(
+				SaveBatchCommand request, 
+				CancellationToken cancellationToken = default)
+			{
+				if(string.IsNullOrEmpty(request.Data)) 
+					return Enumerable.Empty<Measurement>();
+				
+				var measurements = Measurement
+					.MapToModels(JsonSerializer
+						.Deserialize<IEnumerable<MeasurementDto>>(request.Data) 
+					             ?? Enumerable.Empty<MeasurementDto>()).ToList();
+
+				if (measurements == null || !measurements.Any()) 
+					return Enumerable.Empty<Measurement>();
+
+
+				var newData = new List<Measurement>();
+				foreach (var measurement in measurements)
+				{
+					if (await _unitOfWork.Measurements
+						    .GetAsNoTrackingAsync(
+							    filter: m => m.Time == measurement.Time) != null)
+						continue;
+					else
+						newData.Add(measurement);
+				}
+
+				measurements.Clear();
+
+				if (newData == null || !newData.Any()) 
+					return Enumerable.Empty<Measurement>();
+				
+				await _unitOfWork.Measurements.AddRangeAsync(newData);
+				
+				await _unitOfWork.SaveAsync();
+
+				_unitOfWork.ClearChangeTracker();
+
+				await _publisher.Publish(new BatchSavedEvent(newData), cancellationToken);
+
+				return newData;
+			}
+		}
+	}
+```
+This is the notification an notification can have many notification handlers that act on the notification
+```C#
+	public record BatchSavedEvent(List<Measurement> Measurements) : INotification;
+```
+The notification handler populates the charts in the Blazor pages and Blazor components "the dashboard" with data and updates the page.
+the component `@implements INotificationHandler<BatchSavedEvent>` in order for this to work.
+```C#
+  	protected override async Task OnInitializedAsync()
+	{
+		OnBatchSaved += async (sender, changed) =>
+		{
+			_times = changed.Time;
+			var separatedTimes = _times.Split(' ');
+			_cacheCount = separatedTimes.Length;
+			_temperature = changed.TemperaturePolyLine;
+			_pointsTemperature = GeneratePlotsWithTimeFragments(_temperature, separatedTimes);
+			_humidity = changed.HumidityPolyLine;
+			_pointsHumidity = GeneratePlotsWithTimeFragments(_humidity, separatedTimes);
+			_tempPolygon = "0,0 " + _temperature + " 800,0";
+			_humPolygon = "0,0 " + _humidity + " 800,0";
+			BarCharData = PicoWDataConversion.FifoBatchHistory.ToList();
+			_requestDelay =Math.Abs(BarCharData[^1].Item1.Millisecond - changed.Measurements[^1].Time.Millisecond);
+		
+			var notification = await SendNotificationMailIfNeeded(
+				changed.Measurements, "emil.clementz@icloud.com");
+
+			if (!string.IsNullOrEmpty(notification) && notification != _notification)
+			{
+				_notification = notification;
+			}
+
+			await InvokeAsync(() => StateHasChanged());
+		};
+
+		await base.OnInitializedAsync();
+	}
+  
+	public class BatchSavedArgs : EventArgs
+	{
+		public string TemperaturePolyLine { get; set; }
+		public string HumidityPolyLine { get; set; }
+		public string Time { get; set; }
+		public int batchSize { get; set; }
+		public List<Measurement> Measurements { get; set; }
+	}
+	public delegate Task AsyncEventHandler(object sender, EventArgs e);
+
+	public static event EventHandler<BatchSavedArgs> OnBatchSaved;
+
+	public async Task Handle(BatchSavedEvent notification, CancellationToken cancellationToken)
+	{
+		var polyLine = notification.Measurements
+			.OrderBy(t => t.Time)
+			.CacheData(CacheSize,10)
+			.CreatePolyLineFromMeasurements(800, 500);
+
+		OnBatchSaved?.Invoke(
+			this, new BatchSavedArgs
+				{
+					TemperaturePolyLine = polyLine[0],
+					HumidityPolyLine = polyLine[1],
+					Time = polyLine[2],
+					Measurements = notification.Measurements
+				});
+	}
+```
+The data is stored in a static Queue with unique items.
 >*Elaborate on the design choices regarding data transmission and wireless protocols. That is how your choices affect the device range and battery consumption.
 
 
