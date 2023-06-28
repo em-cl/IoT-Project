@@ -587,19 +587,43 @@ The dash board for the rotoary encoder shows X time and Y number of measurements
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/bd3ce31e-9370-4152-9273-281d462152a3)
 
 **Database**
+The project uses a relational database created code first with generated migration scripts.
+using migration scripts allows for easy testing and updates to the database on server when the software is published.
+This is useful when building integration tests. Developers can easily create databases with the scripts to run separate identical databases with different data in production, test and development environments.
+
+EntityFramework core with a SQL relational database was used because it is fast to build and easy to maintain.
+A reltational database is also storage efficient if the program grows in the future. 
+
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/706d1931-d30e-414b-b145-cda8ddbd99db)
 
-I used the Unit of Work design pattern with the Repository designpattern for the data access code. 
+>The project uses the Unit of Work design pattern with the Repository designpattern for the data access code.
+
+Compiled queries improves preformance slightly and makes the data access code compact and easy to read. 
+
+```C#
+ private static readonly Func<CleanDbContext, int, IAsyncEnumerable<TraceLogDto>>
+	        LatestTraceLogsCompiledQuery =
+		        EF.CompileAsyncQuery(
+			        (CleanDbContext ctx, int numberOfLogs) => ctx.TraceLogs
+				        .OrderByDescending(x => x.LoggedDate)
+				        .Take(numberOfLogs)
+				        .Select(log => new TraceLogDto
+			                {
+				                TraceId = log.TraceId,
+				                ComponentName = log.ComponentName,
+				                LoggedDate = log.LoggedDate,
+				                Message = log.Message,
+			                })
+				        .AsNoTracking());
+```
+
+IAsyncenumerable makes it possible to display items as they are yield returned from database so the ui dont freeze when the database grows. 
 
 Data is saved  every time a request arrives before it is displayed to the dashboard as mentioned earlier with a maximum speed of once every 3 seconds. i added this limitation because indoor temperature and humidity take a couple of seconds to change to not waste computing power.
-I think less frequent measurements would also be fine for this project but the debugging would take longer and the dashboard will take a while to fill up while testing so i left it fast.  
-I have not built functionality to periodically remove data this is suggested for the continued development of the project and would need to be added in order to save space.
+I think less frequent measurements would also be fine for this project but the debugging would take longer and the dashboard will take a while to fill up while testing.  
+there is no  functionality in the project to periodically remove data this is suggested for continued development of the project, in order to save space.
 
 
-
-* How often is data saved in the database.
-* Explain your choice of database.
-* Automation/triggers of the data.
 
 
 
