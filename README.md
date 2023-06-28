@@ -213,7 +213,7 @@ use with nugets packages: Mock and Fluent Assertions.
     - Build the dependecy injection containers and the program.cs please look at
       - [WebAPI Program.cs](https://github.com/em-cl/IoT-Project/blob/main/WebAPI/Program.cs), [Application DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Application/DependencyInjection.cs), [Presentation DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presentation/DependencyInjection.cs), [Presistence DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presistence/DependencyInjection.cs), [Infrastructure DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Infrastructure/DependencyInjection.cs) if you are uncertain of what to do.
     - Set the Ip address and port in launchSettings.Json in the WebApi project use ipconfig to se IPv4 Address. . . . . . . . . . . : 192.xxx.x.xx dont't use 5G wifi it will not work with Pico WH
-    - if you dont have a  static ip adress you can run ncpa.cpl if you whant to and add one.
+    - if you dont have a  static ip adress you can run ncpa.cpl on Windows if you whant to and add one.
 
 >The ip and port needs to match the requests from the pico to the WebApi
 
@@ -221,29 +221,31 @@ use with nugets packages: Mock and Fluent Assertions.
 this diagram shows how to connect the sensors to the pico. optionally use the Male to Female cables for the `rotary encoder`.
 ![IoTProjBoard_bb](https://github.com/em-cl/IoT-Project/assets/76754841/b61a564a-2a5f-4c7b-881e-d5b7ed3a0e66)
 
->In order to see changes when you program the microphyton code turn on autosave in vs code and develeoper mode in the PyMakr tab.
+>In order to see changes when you program the MicroPython code turn on autosave in vs code and develeoper mode in the PyMakr tab.
 
 Calculate electricity.
 
 ## Platform
 As previously mentioned im using a .Net stack with Blazor Server frontend.
 It is secure near native performance and helps redering interactive websites with low bandwidth.
-i choose this solution because i whanted to code a scalable project with a responsive dashboard without relying on javascript frameworks like React or Vue. 
+I choose this solution because I wanted to code a scalable project with a responsive dashboard without relying on javascript frameworks like React or Vue. 
 I also tried using a Clean architecture with DDD typical for microservices for the first time to improve code quality and learn how it works, you can read more [Here](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice.) if you are interested.  
-im hosting the software on my laptop. it should work well for most enviorments if you whant to put it on a server, because core is cross platform. 
-This project will work as intended without much effort if published on a iis server.
-the recomended docker image is linux if you want to try docker support.
+I am hosting the software on my laptop. It should work well for most enviorments if you whant to put it on a server, because core is cross platform. 
+This project will work as intended without much effort if published on a IIS server.
+The recomended docker image is Linux if you want to try docker support.
 
 ## Code examples
-From the pico WH to the dashboard a http get request are sent containing data from the sensors. 
+From the pico WH to the dashboard, a http GET request are sent containing data from the sensors. 
 The wireless protocol used is Wifi.
 The transport layer protocol used is TCP.
-i choose to use this to easily communicate between my laptop and pico like any other api.
-The low extra cost of free motivates use of the powerhungry wifi in my home enviorment since the IoT device don´t need to run on battery. it can live in a power jack coupeld with a transformer to reduce the voltage and talk on the home wifi. To not use a battery increases the lifetime of the IoT device and reduces e waste. the range of the wifi likely covers the entire home enviorment and intended use case.
+I choose to use this to easily communicate between my laptop and pico like any other api.
+Using wifi in a home is likely free and motivates use of the powerhungry wifi on the Pico, since the IoT device don´t need to run on battery. it can live in a power jack coupeld with a transformer to reduce the voltage and talk on the home wifi. To not use a battery increases the lifetime of the IoT device and reduces e waste. The range of the wifi likely covers the entire home enviorment and intended use case.
 
 **Getting sensor data**
-Micro Python code
-Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request request is sent. this is the code for the rotary encoder.
+
+MicroPython code
+
+Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request is sent. This is the code for the rotary encoder that adjusts measurements collected.
 ```Python
 def rotaryComponent():
     #constants
@@ -326,6 +328,9 @@ def temperature_and_humidity_sensor():
 ```
 
 **Data flow**
+
+C# code
+
 1. The TCP socket is used to send http Get requests to the Rest API over the wifi.
 2. The Rest Api recives the json array and starts a command using the data.   
 ```C#
@@ -349,7 +354,7 @@ def temperature_and_humidity_sensor():
 			return Ok(data);
 		}
 ```
-3. The string is deserialized to data tranfer objects and converted domain objects, then checked for duplicates and saved in the database. if every thing was correct the new  measurements are published in memory as a MediatR notification.
+3. The string is deserialized to data tranfer objects and converted to domain objects, then checked for duplicates and saved in the database. If every thing was correct the new  measurements are published in memory as a MediatR notification.
 ```C#
 	public record SaveBatchCommand (string Data) : IRequest<IEnumerable<Measurement>>
 	{
@@ -410,12 +415,12 @@ def temperature_and_humidity_sensor():
 		}
 	}
 ```
-This is the notification an notification can have many notification handlers that act on the notification
+This is the notification. A notification can have many notification handlers that listen to the published notification.
 ```C#
 	public record BatchSavedEvent(List<Measurement> Measurements) : INotification;
 ```
 4. The notification handler populates the charts in the Blazor pages and Blazor components "the dashboard" with data and updates the page.
-the component `@implements INotificationHandler<BatchSavedEvent>` in order for this to work.
+The component `@implements INotificationHandler<BatchSavedEvent>` in order for this to work.
 ```C#
   	protected override async Task OnInitializedAsync()
 	{
@@ -476,10 +481,11 @@ the component `@implements INotificationHandler<BatchSavedEvent>` in order for t
 				});
 	}
 ```
-And that how the real time data is handeld.
+And that is how the real time data is handeld.
 
 In addition
-The data is stored in a static Queue with unique items to reduce the amount of calls to the database if you are going to have multiple users/controllers make a user state instead with the same functionality.
+
+The data is stored in a static Queue with unique items to reduce the amount of calls to the database. If you are going to have multiple users/MicroControllers make a user state instead with the same functionality.
 ```C#
 		public static Queue<Measurement> FifoQueue { get; set; } = new();
 		public static HashSet<Measurement> UniqueSet { get; set; } = new();
