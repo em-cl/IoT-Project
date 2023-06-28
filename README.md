@@ -11,7 +11,8 @@ This project is about measuring temperature and humidity and displaying informat
 The Microphyton code in production would live on the `Raspberry Pico WH` and comunicate to the system that lives on a server via wifi through the WebApi. The .Net solution dependencies can be seen in the matrix below.
 | Simple | Detailed | 
 |:--------: |:--------:|
-|![](https://hackmd.io/_uploads/H1LAgNuO2.png)|![](https://hackmd.io/_uploads/SkKaCiuO3.png)|
+|![image](https://github.com/em-cl/IoT-Project/assets/76754841/9ca6474b-ccc7-4474-a5ac-199224f11259)|![image](https://github.com/em-cl/IoT-Project/assets/76754841/d1a57983-c54e-4f0a-a4fe-9b27e1b5edf9)|
+
 
 **Nuget packages**:
 | Name | Description | version | project |
@@ -54,18 +55,25 @@ The MediatR library is used for command execution and in-memory publication and 
 :::
 
 **Code metrics**
-![](https://hackmd.io/_uploads/HJjNGEddn.png)
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/4bed83db-ecaa-425e-a2e7-61087b281680)
 As indicated by the low maintainability index for the WebApi, dependency injection requires a bit of magic to work when using multiple projects with a single program.cs
 
 **Database diagram**
 The database is very simple with no unnecessary complexity.
-![](https://hackmd.io/_uploads/H1x-KVdO2.png)
+it have 2 tables one for logs and one for measurements.
+Tracelogs
+| TraceId | Message | Type | ComponentName | LoggedDate |
+|:-------: |:-------:| :----:| :-------------:| :----------:| 
+| Guid | "Started" | "information" | "PicoW" | DateTime |
 
-
+Measurements
+| Id | Time | Temperature | Humidity |
+|:-------: |:-------:| ----:| -------------:| 
+| Guid | DateTime | 32 | 50 |
 
 ## Time approximation
 
-_Some prior knowledge of the .Net stack is strongly adviced!_
+_Some prior knowledge of the .Net stack is adviced!_
 
 Writing a similar project with the information provided in this tutorial.
 **Beginers** to **intermediate** level programmers in **25+ hours**
@@ -91,8 +99,8 @@ The necessary information and insight about indoor temperature and humidity to o
 
 ## Material
 **Microcontroller**
-For this project the Microcontroller `Raspberry pie Pico WH` was used. But any microcontroller with wifi programmable in `Micro Phyton` should work. the sensors `DHT11` and `HW-040.`are both digital and can use the general purpose pins GPIO, GP0-28 on the pico, for more detailed information se the data sheet https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf    
-for a simple explaination of the pins this site can be used: https://picow.pinout.xyz/
+For this project the Microcontroller `Raspberry pie Pico WH` was used. But any microcontroller with wifi programmable in `Micro Phyton` should work. the sensors `DHT11` and `HW-040.`are both digital and can use the general purpose pins GPIO, GP0-28 on the pico, for more detailed information se the [data sheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf)    
+for a simple explaination of the pins this site can be used [PicoW Pinout](https://picow.pinout.xyz/)
 
 the microcontrollers role in the project is to control the sensors and work as a powersource for them aswell as a gateway to the internet.
 
@@ -100,10 +108,11 @@ the microcontrollers role in the project is to control the sensors and work as a
 
 **DHT11 Temperature and humidity sensor**
 In this project a DHT11 is used to collect temperature and humidity measurements every 3 seconds. the measurement range and accuracy is: 
-  Temperature C°∈[0,50]±2 
-  Humidity % RH ∈[20,90]5± 
+  
+Temperature C°∈[0,50]±2 
+Humidity % RH ∈[20,90]5± 
 
-This range is good for monitoring the temperature and humidity in indors enviorments. more detailed technical specifications can be found at : https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf  
+This range is good for monitoring the temperature and humidity in indors enviorments. more detailed technical specifications can be found in the [Data sheet](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf)  
 
 DHT11 is digital and works with GIPO pins.
 
@@ -118,31 +127,42 @@ The male to male Jumper cables are used for all connections on the bread board e
 
 ### List of material and cost
 
->All materials was procured from electrokit at https://www.electrokit.com/
+>All materials was bought from [electrokit](https://www.electrokit.com/)
 
-|          | Material | Price (sek)|
-|:--------: |:--------:| :----------:|  
-| ![](https://hackmd.io/_uploads/rJtYhBOO3.png) | Raspberry Pie Pico WH |	109.00 SEK |
-| ![](https://hackmd.io/_uploads/SkKKTrdOh.png)| Bread board 400 connections | 49.00 SEK  |
-|![](https://hackmd.io/_uploads/ByGVJLOu3.png)|Jumper cables Male to Male |29.00 SEK|
-|![](https://hackmd.io/_uploads/HkVibO__3.png)|Jumper wires female/male|29.00 SEK|
-|![](https://hackmd.io/_uploads/ry1QH_u_n.png)| Micro-Usb 1m |39.00 SEK|
-|![](https://hackmd.io/_uploads/B1PdDu_u2.png)|DHT11 Temperature and humidity sensor|49.00 SEK|
-|![](https://hackmd.io/_uploads/SkyuI_u_2.png)|HW-040. Rotary encoder|29.00 SEK|
+| Material | Price (sek)|
+|:--------:| :----------:|  
+| Raspberry Pie Pico WH |	109.00 SEK |
+| Bread board 400 connections | 49.00 SEK  |
+|Jumper cables Male to Male |29.00 SEK|
+|Jumper wires female/male|29.00 SEK|
+| Micro-Usb 1m |39.00 SEK|
+|DHT11 Temperature and humidity sensor|49.00 SEK|
+|HW-040. Rotary encoder|29.00 SEK|
 
 
 ### Computer setup
-
->How is the device programmed. Which IDE are you using. Describe all steps from flashing the firmware, installing plugins in your favorite editor. How flashing is done on MicroPython. The aim is that a beginner should be able to understand.
+I am using Windows 11 on my laptop. Blazor apps are fairly lightweight to develop so most computers should be fine. If you have less then 8gb ram you might encounter lagg.
+the section below covers the following:
+* How the PicoW device programmed.
+* Which IDE:s is used.
+* Installing software.
+* Installing Templates
+* Installing extensions and nugets.
+* Step by step from flashing the firmware.
+* How flashing is done on MicroPython.
 
 **Chosen IDE:s related software**
+
 >Required
 
+The Raspberry pie Pico WH can be programmed in Micro Phyton.
+Install Phyton if you don't allready have it.
 Python https://www.python.org/downloads/
 
 >Required
 
-the recomended IDE:s used for this project are `Visual studio code` and `Visual studio 2022`. ==You don't need pro version, community is fine.== https://visualstudio.microsoft.com/
+Install the IDE:s 
+the recomended IDE:s used for this project are `Visual studio code` and `Visual studio 2022`. ==You don't need pro version, community is fine.== [Visual Studio](https://visualstudio.microsoft.com/)
 
 >Optional for comfort 
 
@@ -150,11 +170,12 @@ I use vs code and Visual studio for the familiar keybinds wich gives me the comf
 
 >Required
 
-You need the `PyMakr` extension in visual studio code to upload code to the Pico WH. https://docs.pycom.io/gettingstarted/software/vscode/ 
+Install PyMakr to be able to upload code on the pico
+You need the `PyMakr` extension in visual studio code to upload code to the Pico WH. [PyMakr](https://docs.pycom.io/gettingstarted/software/vscode/) 
 
 >Required
 
-PyMakr requires `Node.js` to work so istall this software aswell. ==Use the recomended version== https://nodejs.org/en. The database editor used for this project is `Microsoft SQL Server Management Studio 18` ==Scroll down and pick the developer edition== https://www.microsoft.com/en-us/sql-server/sql-server-downloads 
+PyMakr requires `Node.js` to work so istall this software aswell. ==Use the recomended version== [Node.js](https://nodejs.org/en.) The database editor used for this project is `Microsoft SQL Server Management Studio 18` ==Scroll down and pick the developer edition== [Ms SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) 
 
 >Required
 
@@ -166,4 +187,3 @@ Test templates
 Automated tests with XUnit NUnit or MSTest 
 use with nugets packages: Mock and Fluent Assertions.
 
-I am using Windows 11 on my laptop. Blazor apps are fairly lightweight to develop so most computers should be fine. If you have less then 8gb ram you might encounter lagg.
