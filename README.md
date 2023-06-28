@@ -227,13 +227,104 @@ Calculate electricity.
 
 ## Platform
 As previously mentioned im using a .Net stack with Blazor Server frontend.
-
+It is secure near native performance and helps redering interactive websites with low bandwidth.
 i choose this solution because i whanted to code a scalable project with a responsive dashboard without relying on javascript frameworks like React or Vue. 
-
-I also tried using a microservice architecture for the first time to learn how it works.
-
+I also tried using a Clean architecture with DDD typical for microservices for the first time to improve code quality and learn how it works, you can read more [Here](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice.) if you are interested.  
 im hosting the software on my laptop. it should work well for most enviorments if you whant to put it on a server, because core is cross platform. 
->the recomended docker image is linux if you want to try docker support.
+This project will work as intended without much effort if published on a iis server.
+the recomended docker image is linux if you want to try docker support.
+
+## Code examples
+From the pico WH to the dashboard a http get request are sent containing data from the sensors. 
+The wireless protocol used is Wifi.
+The transport layer protocol used is TCP
+the tcp socket is used to send http Get requests to the rest api
+Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request request is sent. this is the code for the rotary encoder.
+```
+def rotaryComponent():
+    #constants
+    DT = 0 
+    CLK = 1
+
+    #Pins
+    _directionPin = Pin(DT,Pin.IN)
+    _clockPin = Pin(CLK,Pin.IN)
+    
+    #sources:
+    # irq https://gurgleapps.com/learn/electronics/ky-040-rotary-encoder-on-a-raspberry-pi-pico-detailed-explanation-and-step-by-step-code
+    # left or right? https://www.youtube.com/watch?v=3fAFNwA-aEY
+    def rotaryChange(pin):
+        global position
+        global previousValue
+        if previousValue != _clockPin.value():
+            if _clockPin.value() == False:
+                if _directionPin.value() == False:
+                    position = position - 1
+                else:
+                    position = position + 1      
+            previousValue = _clockPin.value()
+    #events
+    _clockPin.irq(handler=rotaryChange, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING)
+    _directionPin.irq(handler=rotaryChange, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING)
+```
+This is the life loop of the Pico. it syncs time from a timeserver to stamp measurements, and builds the json string.
+```
+dataList = []
+run = True
+def temperature_and_humidity_sensor():
+    import dht
+    tempSensor = dht.DHT11(machine.Pin(2))     # DHT11 Constructor 
+    retrycounter = 0
+    while run:
+        
+        #time
+        try:
+            ntptime.settime()
+        except Exception:
+            retrycounter+=1
+            print_dots("({})not connected to time server...".format(retrycounter),retrycounter,3)
+            time.sleep(0.5)
+            clear()
+            if retrycounter == 3:
+                boot.do_connect()
+                retrycounter = 0
+            continue
+
+        retrycounter = 0
+        current_time = time.time()
+        local_time = time.localtime(current_time)
+        tempSensor.measure()
+        temperature = tempSensor.temperature()
+        humidity = tempSensor.humidity()
+        Data = {
+            "Time": local_time,
+            "Temperature": temperature,
+            "Humidity" : humidity
+        }
+        dataList.append(Data)
+        clear()
+        absolutePos = abs(position)
+        print("number of measurements",absolutePos)
+        
+        if position!=0:
+            print_dots("collecting",len(dataList),absolutePos)
+            message = []
+            for d in dataList:
+                message.append(json.dumps(d))  
+            jsonBody = ('['+(','.join(message))+']')
+            print(jsonBody)
+            if len(dataList) >= absolutePos:
+                apiSend(absolutePos,jsonBody)
+        elif position == 0:
+            dataList.clear()
+        
+        time.sleep(3)
+```
+i chooose to use
+>*Elaborate on the design choices regarding data transmission and wireless protocols. That is how your choices affect the device range and battery consumption.
+
+
+
 
 
 
