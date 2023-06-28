@@ -92,7 +92,7 @@ The objective of the digital artifact is to monitor humidity and temperature wit
 The knowledge artifact from building a project like this covers many important core concepts for distributed systems and tie them together. 
 
 
-**What insights will u gain from a project like this?**
+**What insights will you gain from a project like this?**
 How to build scalable modern systems in the .NET stack:
 How to use the Raspberry Pi Pico W Microcontroller with MicroPython.
 The necessary information and insight about indoor temperature and humidity to optimize your home for optimal living conditions.
@@ -238,6 +238,8 @@ the recomended docker image is linux if you want to try docker support.
 From the pico WH to the dashboard a http get request are sent containing data from the sensors. 
 The wireless protocol used is Wifi.
 The transport layer protocol used is TCP.
+i choose to use this to easily communicate between my laptop and pico like any other api.
+The low extra cost of free motivates use of the powerhungry wifi in my home enviorment since the IoT device don´t need to run on battery. it can live in a power jack coupeld with a transformer to reduce the voltage and talk on the home wifi. To not use a battery increases the lifetime of the IoT device and reduces e waste. the range of the wifi likely covers the entire home enviorment and intended use case.
 
 **Getting sensor data**
 Micro Python code
@@ -324,8 +326,8 @@ def temperature_and_humidity_sensor():
 ```
 
 **Data flow**
-The TCP socket is used to send http Get requests to the Rest API over the wifi.
-The Rest Api recives the json array and starts a command using the data.   
+1. The TCP socket is used to send http Get requests to the Rest API over the wifi.
+2. The Rest Api recives the json array and starts a command using the data.   
 ```C#
 	` [HttpGet("Test")]
 		// GET: 
@@ -347,7 +349,7 @@ The Rest Api recives the json array and starts a command using the data.
 			return Ok(data);
 		}
 ```
-The string is deserialized to data tranfer objects and converted domain objects, then checked for duplicates and saved in the database. if every thing was correct the new  measurements are published in memory as a MediatR notification.
+3. The string is deserialized to data tranfer objects and converted domain objects, then checked for duplicates and saved in the database. if every thing was correct the new  measurements are published in memory as a MediatR notification.
 ```C#
 	public record SaveBatchCommand (string Data) : IRequest<IEnumerable<Measurement>>
 	{
@@ -412,7 +414,7 @@ This is the notification an notification can have many notification handlers tha
 ```C#
 	public record BatchSavedEvent(List<Measurement> Measurements) : INotification;
 ```
-The notification handler populates the charts in the Blazor pages and Blazor components "the dashboard" with data and updates the page.
+4. The notification handler populates the charts in the Blazor pages and Blazor components "the dashboard" with data and updates the page.
 the component `@implements INotificationHandler<BatchSavedEvent>` in order for this to work.
 ```C#
   	protected override async Task OnInitializedAsync()
@@ -474,10 +476,93 @@ the component `@implements INotificationHandler<BatchSavedEvent>` in order for t
 				});
 	}
 ```
-The data is stored in a static Queue with unique items.
->*Elaborate on the design choices regarding data transmission and wireless protocols. That is how your choices affect the device range and battery consumption.
+And that how the real time data is handeld.
 
+In addition
+The data is stored in a static Queue with unique items to reduce the amount of calls to the database if you are going to have multiple users/controllers make a user state instead with the same functionality.
+```C#
+		public static Queue<Measurement> FifoQueue { get; set; } = new();
+		public static HashSet<Measurement> UniqueSet { get; set; } = new();
 
+		public static List<Measurement> CacheData(
+			this IOrderedEnumerable<Measurement> measurements,
+			int maxNumOfItems,
+			int maxNumOfHistory)
+		{
+			if (measurements == null || !measurements.Any()) return FifoQueue.ToList();
+			
+			var sendHistory = (DateTime.Now, measurements.Count());
+			if (UniqueBatches.Add(sendHistory))
+			{
+				FifoBatchHistory.Enqueue(sendHistory);
+			}
+
+			foreach (var measurement in measurements)
+			{
+				if (UniqueSet.Add(measurement))
+				{
+					FifoQueue.Enqueue(measurement);
+				}
+			}
+			
+			while (FifoBatchHistory.Count >= maxNumOfHistory)
+			{
+				var measurement = FifoBatchHistory.Dequeue();
+				UniqueBatches.Remove(measurement);
+			}
+
+			while (FifoQueue.Count >= maxNumOfItems)
+			{
+				var measurement = FifoQueue.Dequeue();
+				UniqueSet.Remove(measurement);
+			}
+			return FifoQueue.ToList();
+		}
+
+```
+This method converts the measurements to polyline used in the line charts   
+```C#
+	public static string[] CreatePolyLineFromMeasurements(this List<Measurement> measurements, int width, int height)
+		{
+			DateTime referenceTime = measurements[0].Time;
+
+			var timeScaleFactor = (measurements.Count() == 1)
+				? 1
+				: width / (measurements[^1].Time - referenceTime).TotalSeconds;
+
+			var temperatureScaleFactor = height / 50;
+			var humidityScaleFactor = height / 90;
+
+			var temperatureBuilder = new StringBuilder();
+			var humidityBuilder = new StringBuilder();
+			var time = new StringBuilder();
+
+			for (int i = 0; i < measurements.Count; i++)
+			{
+				var xValueInSeconds = (int)((measurements[i].Time - referenceTime).TotalSeconds * timeScaleFactor);
+
+				temperatureBuilder.Append(
+					$"{xValueInSeconds},{measurements[i].Temperature * temperatureScaleFactor} ");
+				humidityBuilder.Append(
+					$"{xValueInSeconds},{measurements[i].Humidity * humidityScaleFactor} ");
+
+				time.Append(measurements[i].Time.ToString("mm:ss") + ", ");
+			}
+			var result = new[]
+			{
+				temperatureBuilder.ToString(),
+				humidityBuilder.ToString(),
+				time.ToString()
+			};
+
+			temperatureBuilder.Clear();
+			humidityBuilder.Clear();
+			time.Clear();
+
+			return result;
+
+		}
+```
 
 
 
