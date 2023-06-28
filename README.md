@@ -156,8 +156,8 @@ the section below covers the following:
 >Required
 
 The Raspberry pie Pico WH can be programmed in Micro Phyton.
-Install Phyton if you don't allready have it.
-Python https://www.python.org/downloads/
+Install Python if you don't allready have it.
+[Python](https://www.python.org/downloads/)
 
 >Required
 
@@ -187,3 +187,22 @@ Test templates
 Automated tests with XUnit NUnit or MSTest 
 use with nugets packages: Mock and Fluent Assertions.
 
+**Step by step getting started**
+- Install the Required software
+- Install the Required templates
+- Install the Required extensions
+  - Setting up the projects in the **.Net stack**
+    - In Visual studio Create a empty solution
+    - Add a empty folders source and Test inside the solutions
+    - Add the Domain, Infrastructure, Presistence and application projects as project type Class Library
+    - Add the Web Api as a Asp.Net Core Web Api
+    - Add a Blazor Server App Empty project and change output type to class library via: properties > application > general > Output type.
+    - Set the available project references like the detailed column in the first matrix.
+    - install the nugetpackages in the second matrix in the correct projects
+    - Set the WebbApi as startup project.
+    - Move the correct Program.cs code in precentation to WebApi Program.cs **in the correct order and place.**
+      - _Warning! the project www.root and images needs to be in WebApi, scoped css files wont work properly out of the box. find a solution if you can't live with it ;)_
+    - Build the dependecy injection containers and the program.cs please look at
+      - [WebAPI Program.cs](https://github.com/em-cl/IoT-Project/blob/main/WebAPI/Program.cs), [Application DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Application/DependencyInjection.cs), [Presentation DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presentation/DependencyInjection.cs), [Presistence DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presistence/DependencyInjection.cs), [Infrastructure DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Infrastructure/DependencyInjection.cs) if you are uncertain of what to do.
+    - Set the Ip address and port in launchSettings.Json in the WebApi project use ipconfig to se IPv4 Address. . . . . . . . . . . : 192.xxx.x.xx dont't use 5G wifi it will not work with Pico WH
+    - if you dont have a  static ip adress you can run ncpa.cpl if you whant to and add one. 
