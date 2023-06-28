@@ -99,7 +99,9 @@ the microcontrollers role in the project is to control the sensors and work as a
 ### Sensors & specification
 
 **DHT11 Temperature and humidity sensor**
-In this project a DHT11 is used to collect temperature and humidity measurements every 3 seconds. the measurement range and accuracy is: $$ \ Temperature\ C°∈[0,50] \pm 2\  $$ $$ Humidity\ \%\ RH ∈[20,90]\pm 5\ $$ 
+In this project a DHT11 is used to collect temperature and humidity measurements every 3 seconds. the measurement range and accuracy is: 
+  Temperature C°∈[0,50]±2 
+  Humidity % RH ∈[20,90]5± 
 
 This range is good for monitoring the temperature and humidity in indors enviorments. more detailed technical specifications can be found at : https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf  
 
