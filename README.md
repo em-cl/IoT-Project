@@ -112,7 +112,7 @@ In this project a DHT11 is used to collect temperature and humidity measurements
 Temperature C°∈[0,50]±2 
 Humidity % RH ∈[20,90]5± 
 
-This range is good for monitoring the temperature and humidity in indoors enviorments. more detailed technical specifications can be found in the [Data sheet](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf)  
+This range is good for monitoring the temperature and humidity in indoors environments. more detailed technical specifications can be found in the [Data sheet](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf)  
 
 DHT11 is digital and works with GIPO pins.
 
@@ -201,7 +201,7 @@ use with nugets packages: Mock and Fluent Assertions.
 
   - Setting up the projects in the **.Net stack**
     - In Visual studio Create a empty solution
-    - Add a empty folders source and Test inside the solutions
+    - Add a empty folders source and Test inside the solution
     - Add the Domain, Infrastructure, Presistence and application projects as project type Class Library
     - Add the Web Api as a Asp.Net Core Web Api
     - Add a Blazor Server App Empty project and change output type to class library via: properties > application > general > Output type.
