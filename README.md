@@ -112,7 +112,7 @@ In this project a DHT11 is used to collect temperature and humidity measurements
 Temperature C°∈[0,50]±2 
 Humidity % RH ∈[20,90]5± 
 
-This range is good for monitoring the temperature and humidity in indors enviorments. more detailed technical specifications can be found in the [Data sheet](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf)  
+This range is good for monitoring the temperature and humidity in indoors enviorments. more detailed technical specifications can be found in the [Data sheet](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf)  
 
 DHT11 is digital and works with GIPO pins.
 
