@@ -217,8 +217,24 @@ use with nugets packages: Mock and Fluent Assertions.
 
 >The ip and port needs to match the requests from the pico to the WebApi
 
-## Connecting the sensors
+## Puting everything together
 this diagram shows how to connect the sensors to the pico. optionally use the Male to Female cables for the `rotary encoder`.
-![image](https://github.com/em-cl/IoT-Project/assets/76754841/c1787050-2960-4e97-9076-991082ef20ea)
+![IoTProjBoard_bb](https://github.com/em-cl/IoT-Project/assets/76754841/b61a564a-2a5f-4c7b-881e-d5b7ed3a0e66)
+
+>In order to see changes when you program the microphyton code turn on autosave in vs code and develeoper mode in the PyMakr tab.
+
+Calculate electricity.
+
+## Platform
+im just hosting the software on my laptop. it should work well for most enviorments if you whant to put it on a server, because core is cross platform. 
+>the recomended docker image is linux if you want to try docker support.
+
+
+
+
+
+
+
+
 
 
