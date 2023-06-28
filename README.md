@@ -191,6 +191,14 @@ use with nugets packages: Mock and Fluent Assertions.
 - Install the Required software
 - Install the Required templates
 - Install the Required extensions
+  - Setting up Pico WH
+    - Update the firmware on the Raspberry Pi Pico WH:
+      - Download the firmware for Micro Phyton https://micropython.org/download/rp2-pico-w/ pick the latest under releases.
+      - connect the micro usb first in the pico, then hold the BOOTSEL button while connecting the other end of the cable to a usb port on your computer.
+      - the driver RPI-RP2 for the Pico should appear in the file explorer, drag the .uf2 firmware  into the driver and wait for the drive to automatically  disconnect.
+
+>After this you can start codeing in MicroPhyton on the pico.
+
   - Setting up the projects in the **.Net stack**
     - In Visual studio Create a empty solution
     - Add a empty folders source and Test inside the solutions
@@ -205,4 +213,6 @@ use with nugets packages: Mock and Fluent Assertions.
     - Build the dependecy injection containers and the program.cs please look at
       - [WebAPI Program.cs](https://github.com/em-cl/IoT-Project/blob/main/WebAPI/Program.cs), [Application DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Application/DependencyInjection.cs), [Presentation DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presentation/DependencyInjection.cs), [Presistence DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presistence/DependencyInjection.cs), [Infrastructure DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Infrastructure/DependencyInjection.cs) if you are uncertain of what to do.
     - Set the Ip address and port in launchSettings.Json in the WebApi project use ipconfig to se IPv4 Address. . . . . . . . . . . : 192.xxx.x.xx dont't use 5G wifi it will not work with Pico WH
-    - if you dont have a  static ip adress you can run ncpa.cpl if you whant to and add one. 
+    - if you dont have a  static ip adress you can run ncpa.cpl if you whant to and add one.
+
+>The ip and port needs to match the requests from the pico to the WebApi
