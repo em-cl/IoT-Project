@@ -226,7 +226,13 @@ this diagram shows how to connect the sensors to the pico. optionally use the Ma
 Calculate electricity.
 
 ## Platform
-im just hosting the software on my laptop. it should work well for most enviorments if you whant to put it on a server, because core is cross platform. 
+As previously mentioned im using a .Net stack with Blazor Server frontend.
+
+i choose this solution because i whanted to code a scalable project with a responsive dashboard without relying on javascript frameworks like React or Vue. 
+
+I also tried using a microservice architecture for the first time to learn how it works.
+
+im hosting the software on my laptop. it should work well for most enviorments if you whant to put it on a server, because core is cross platform. 
 >the recomended docker image is linux if you want to try docker support.
 
 
