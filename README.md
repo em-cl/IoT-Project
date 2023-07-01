@@ -623,6 +623,11 @@ Data is saved  every time a request arrives before it is displayed to the dashbo
 I think less frequent measurements would also be fine for this project but the debugging would take longer and the dashboard will take a while to fill up while testing.  
 there is no  functionality in the project to periodically remove data this is suggested for continued development of the project, in order to save space.
 
+>The mail notification
+
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/558912bd-3ef5-4cba-a843-eb1c96ee4359)
+
+
 
 
 
