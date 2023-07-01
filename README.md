@@ -233,33 +233,34 @@ for moore detailed specifications and instructions look at the [datasheet](https
  
 If you for some other project want to connect both the micro usb and battery via VSYS at the same time, again please look at the [datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf) to do this safely.
 
-**DHT11**
+**DHT11**  
 According to the [Data sheet for DHT11](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf).  
+The minimum condition status is chosen for its proximity to thhe Pico W Voltage output level.  
 V = 3V  
-I = 0,2mA avg  
+I<sub>1</sub> = 0,2mA avg  
 Ohms law gives  
-R1 =  V/I = 3V / 0,2mA = 15kΩ    
-the GIPO pins used in the project are powerd by the 3.3V rail
+R<sub>1</sub> =  V / I = 3V / 0,2mA = 15kΩ    
 
-**HW040**
+**HW040**  
 According to the [Data sheet for HW040/KY040](https://www.rcscomponents.kiev.ua/datasheets/ky-040-datasheet.pdf)
 When Clk or DT pin sends 
 
-R2 = 10kΩ  
+R<sub>2</sub> = 10kΩ  
 V = 3.3V supplied from the Pico W    
 Ohms law gives   
-I = V/R = 3.3V/100kΩ = 0,033mA
+I<sub>2</sub> = V / R = 3.3V / 10kΩ = 0,33mA
 
-**The Circuit of sensors**
-The sensors are connected in paralell to the Pico W. The resistance for thr sensors in paralell is according to:  
-1/Rt = 1/R1 + 1/R2
+**Parallell Circuit of sensors**  
+The sensors are connected in paralell to the Pico W.  
+The resistance for the sensors in paralell is according to:  
+1/R<sub>s</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub>
 
-Rt = 1/(1/R1 + 1/R2) = R1*R2/(R1+R2) = 15000Ω * 10000Ω/(15000Ω + 10000Ω) = 150 000 000Ω/25000Ω = 6000Ω  
-I = V/RT = 3.3v / 6000Ω = 0,55mA  
+R<sub>s</sub> = 1 / (1/R<sub>1</sub> + 1/R<sub>2</sub>) = R<sub>1</sub> * R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>) = 15000 Ω * 10000 Ω / (15000 Ω + 10000 Ω) = 150 000 000 Ω / 25000 Ω = 6000 Ω  
+I<sub>s</sub> = V/R<sub>s</sub> = 3.3V / 6000 Ω = 0,55mA  
 
-Sensor circuit Voltage = 3.3V,  
-sensor circuit total resistance RT = 6kΩ,  
-sensor circuit total current I = 0,55mA  
+Sensor circuit Voltage V<sub>s</sub> = 3.3V,  
+Sensor circuit total resistance R<sub>s</sub> = 6kΩ,  
+Sensor circuit total current I<sub>s</sub> = 0,55mA  
 
 ## Platform
 As previously mentioned im using a .Net stack with Blazor Server frontend.
