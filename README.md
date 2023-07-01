@@ -110,7 +110,8 @@ the microcontrollers role in the project is to control the sensors and work as a
 In this project a DHT11 is used to collect temperature and humidity measurements every 3 seconds. the measurement range and accuracy is: 
   
 Temperature C°∈[0,50]±2 
-Humidity % RH ∈[20,90]5± 
+
+Relative Humidity % RH ∈[20,90]±5 
 
 This range is good for monitoring the temperature and humidity in indoors environments. more detailed technical specifications can be found in the [Data sheet](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf)  
 
@@ -148,8 +149,7 @@ the section below covers the following:
 * Installing software.
 * Installing Templates
 * Installing extensions and nugets.
-* Step by step from flashing the firmware.
-* How flashing is done on MicroPython.
+* Step by step flashing the firmware.
 
 **Chosen IDE:s related software**
 
@@ -223,7 +223,43 @@ this diagram shows how to connect the sensors to the pico. optionally use the Ma
 
 >In order to see changes when you program the MicroPython code turn on autosave in vs code and develeoper mode in the PyMakr tab.
 
-Calculate electricity.
+## Electricity.
+
+**PICO W**
+In order to supply the Pico W with power you can either use the VBUS 5V± 10% via Micro USB or feed the VSYS pin from a battery: external source V ∈[1.8,5.5]. A inductor in the pico lowers or raises the Voltage to 3.3V before providing the sensors with power.
+
+for this project this is all you need to know pick one or the other don't use both at the same time. Note that Pico is capable of moore for example: There is a protection diode between VBUS and VSYS that protects against incorrect polarity and backfeeding power into the USB supply as described in [this video](https://www.youtube.com/watch?v=3PH9jzRsb5E). 
+for moore detailed specifications and instructions look at the [datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf).
+ 
+If you for some other project want to connect both the micro usb and battery via VSYS at the same time, again please look at the [datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf) to do this safely.
+
+**DHT11**
+According to the [Data sheet for DHT11](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf).  
+V = 3V  
+I = 0,2mA avg  
+Ohms law gives  
+R1 =  V/I = 3V / 0,2mA = 15kΩ    
+the GIPO pins used in the project are powerd by the 3.3V rail
+
+**HW040**
+According to the [Data sheet for HW040/KY040](https://www.rcscomponents.kiev.ua/datasheets/ky-040-datasheet.pdf)
+When Clk or DT pin sends 
+
+R2 = 10kΩ  
+V = 3.3V supplied from the Pico W    
+Ohms law gives   
+I = V/R = 3.3V/100kΩ = 0,033mA
+
+**The Circuit of sensors**
+The sensors are connected in paralell to the Pico W. The resistance for thr sensors in paralell is according to:  
+1/Rt = 1/R1 + 1/R2
+
+Rt = 1/(1/R1 + 1/R2) = R1*R2/(R1+R2) = 15000Ω * 10000Ω/(15000Ω + 10000Ω) = 150 000 000Ω/25000Ω = 6000Ω  
+I = V/RT = 3.3v / 6000Ω = 0,55mA  
+
+Sensor circuit Voltage = 3.3V,  
+sensor circuit total resistance RT = 6kΩ,  
+sensor circuit total current I = 0,55mA  
 
 ## Platform
 As previously mentioned im using a .Net stack with Blazor Server frontend.
