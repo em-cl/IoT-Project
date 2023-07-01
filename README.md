@@ -1,14 +1,14 @@
 # IoT-Project
 
-## Temperature and humidity sensor with adjustable request rate using rotary encoder, programmed in .Net and Microphyton
+## Temperature and humidity sensor with adjustable request rate using rotary encoder, programmed in .Net and MicroPython
 
 **Author:** `Emil Clementz` **Course Id** `ec222vw`
 
 ## Project overview
-This project is about measuring temperature and humidity and displaying information in a intuitive way. also notifications are automatically sent via mail when adjustable threasholds are met to inform the user. 
+This project is about measuring temperature and humidity and displaying information in a intuitive way. also notifications are automatically sent via mail when adjustable thresholds are met to inform the user. 
 
 **Project structure for solution:**
-The Microphyton code in production would live on the `Raspberry Pico WH` and comunicate to the system that lives on a server via wifi through the WebApi. The .Net solution dependencies can be seen in the matrix below.
+The MicroPython code in production would live on the `Raspberry Pico WH` and communicate to the system that lives on a server via Wi-Fi through the WebApi. The .Net solution dependencies can be seen in the matrix below.
 | Simple | Detailed | 
 |:--------: |:--------:|
 |![image](https://github.com/em-cl/IoT-Project/assets/76754841/9ca6474b-ccc7-4474-a5ac-199224f11259)|![image](https://github.com/em-cl/IoT-Project/assets/76754841/d1a57983-c54e-4f0a-a4fe-9b27e1b5edf9)|
@@ -73,10 +73,10 @@ Measurements
 
 ## Time approximation
 
-_Some prior knowledge of the .Net stack is adviced!_
+_Some prior knowledge of the .Net stack is advised!_
 
 Writing a similar project with the information provided in this tutorial.
-**Beginers** to **intermediate** level programmers in **25+ hours**
+**Beginners** to **intermediate** level programmers in **25+ hours**
 **Advanced** programmers **5-10+ hours**
 
 
@@ -99,10 +99,10 @@ The necessary information and insight about indoor temperature and humidity to o
 
 ## Material
 **Microcontroller**
-For this project the Microcontroller `Raspberry pie Pico WH` was used. But any microcontroller with wifi programmable in `Micro Phyton` should work. the sensors `DHT11` and `HW-040.`are both digital and can use the general purpose pins GPIO, GP0-28 on the pico, for more detailed information se the [data sheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf)    
-for a simple explaination of the pins this site can be used [PicoW Pinout](https://picow.pinout.xyz/)
+For this project the Microcontroller `Raspberry pie Pico WH` was used. But any microcontroller with Wi-Fi programmable in `Micro Phyton` should work. the sensors `DHT11` and `HW-040.`are both digital and can use the general purpose pins GPIO, GP0-28 on the Pico, for more detailed information se the [data sheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf)    
+for a simple explanation of the pins this site can be used [PicoW Pinout](https://picow.pinout.xyz/)
 
-the microcontrollers role in the project is to control the sensors and work as a powersource for them aswell as a gateway to the internet.
+the microcontrollers role in the project is to control the sensors and work as a power source for them as well as a gateway to the internet.
 
 ### Sensors & specification
 
@@ -124,13 +124,13 @@ This sensor is used to adjust request rate and batch size in the project based o
 HW-040 is digital and works with GIPO pins.
 
 **Cables**
-The male to male Jumper cables are used for all connections on the bread board except for the rotary encoder that uses male to female jumper cables.
+The male-to-male Jumper cables are used for all connections on the bread board except for the rotary encoder that uses male to female jumper cables.
 
 ### List of material and cost
 
 >All materials was bought from [electrokit](https://www.electrokit.com/)
 
-| Material | Price (sek)|
+| Material | Price (SEK)|
 |:--------:| :----------:|  
 | Raspberry Pie Pico WH |	109.00 SEK |
 | Bread board 400 connections | 49.00 SEK  |
@@ -156,17 +156,17 @@ the section below covers the following:
 >Required
 
 The Raspberry pie Pico WH can be programmed in Micro Phyton.
-Install Python if you don't allready have it.
+Install Python if you don't already have it.
 [Python](https://www.python.org/downloads/)
 
 >Required
 
 Install the IDE:s 
-the recomended IDE:s used for this project are `Visual studio code` and `Visual studio 2022`. ==You don't need pro version, community is fine.== [Visual Studio](https://visualstudio.microsoft.com/)
+the recommended IDE:s used for this project are `Visual studio code` and `Visual studio 2022`. ==You don't need pro version, community is fine.== [Visual Studio](https://visualstudio.microsoft.com/)
 
 >Optional for comfort 
 
-I use vs code and Visual studio for the familiar keybinds wich gives me the comfort of ergonomy. (Free!) I also recomend to try the free VsVim 2022, Add New File and Editor Guidelines extensions in visual studio.
+I use vs code and Visual studio for the familiar key binds which gives that are ergonomic. (Free!) I also recomend to try the free VsVim 2022, Add New File and Editor Guidelines extensions in visual studio.
 
 >Required
 
@@ -175,13 +175,13 @@ You need the `PyMakr` extension in visual studio code to upload code to the Pico
 
 >Required
 
-PyMakr requires `Node.js` to work so istall this software aswell. ==Use the recomended version== [Node.js](https://nodejs.org/en.) The database editor used for this project is `Microsoft SQL Server Management Studio 18` ==Scroll down and pick the developer edition== [Ms SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) 
+PyMakr requires `Node.js` to work so install this software as well. ==Use the recommended version== [Node.js](https://nodejs.org/en.) The database editor used for this project is `Microsoft SQL Server Management Studio 18` ==Scroll down and pick the developer edition== [Ms SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) 
 
 >Required
 
 You need the following project templates for visual studio, Empty solution, ASP.Net Core Web Api, Class Library, Console App, Blazor Server App Empty. Use the installer to add them.
 
->If you whant to deploy to customers in the future it is recomended to build automated tests for key functionality.
+>It is best practice to build automated tests for key functionality, if you have time.
 
 Test templates
 Automated tests with XUnit NUnit or MSTest 
@@ -197,7 +197,7 @@ use with nugets packages: Mock and Fluent Assertions.
       - connect the micro usb first in the pico, then hold the BOOTSEL button while connecting the other end of the cable to a usb port on your computer.
       - the driver RPI-RP2 for the Pico should appear in the file explorer, drag the .uf2 firmware  into the driver and wait for the drive to automatically  disconnect.
 
->After this you can start codeing in MicroPhyton on the pico.
+>After this you can start programming in MicroPython on the Pico.
 
   - Setting up the projects in the **.Net stack**
     - In Visual studio Create a empty solution
@@ -206,36 +206,36 @@ use with nugets packages: Mock and Fluent Assertions.
     - Add the Web Api as a Asp.Net Core Web Api
     - Add a Blazor Server App Empty project and change output type to class library via: properties > application > general > Output type.
     - Set the available project references like the detailed column in the first matrix.
-    - install the nugetpackages in the second matrix in the correct projects
-    - Set the WebbApi as startup project.
-    - Move the correct Program.cs code in precentation to WebApi Program.cs **in the correct order and place.**
-      - _Warning! the project www.root and images needs to be in WebApi, scoped css files wont work properly out of the box. find a solution if you can't live with it ;)_
-    - Build the dependecy injection containers and the program.cs please look at
+    - install the NuGet packages in the second matrix in the correct projects
+    - Set the WebApi as startup project.
+    - Move the correct Program.cs code in presentation to WebApi Program.cs **in the correct order and place.**
+      - _Warning! the project www.root and images needs to be in WebApi, scoped CSS files wont work properly out of the box. find a solution if you can't live with it ;)_
+    - Build the dependency injection containers and the program.cs please look at
       - [WebAPI Program.cs](https://github.com/em-cl/IoT-Project/blob/main/WebAPI/Program.cs), [Application DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Application/DependencyInjection.cs), [Presentation DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presentation/DependencyInjection.cs), [Presistence DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Presistence/DependencyInjection.cs), [Infrastructure DP Injection](https://github.com/em-cl/IoT-Project/blob/main/Infrastructure/DependencyInjection.cs) if you are uncertain of what to do.
     - Set the Ip address and port in launchSettings.Json in the WebApi project use ipconfig to se IPv4 Address. . . . . . . . . . . : 192.xxx.x.xx dont't use 5G wifi it will not work with Pico WH
-    - if you dont have a  static ip adress you can run ncpa.cpl on Windows if you whant to and add one.
+    - if you don’t have a static ip-address you can run ncpa.cpl on Windows if you want to and add one.
 
->The ip and port needs to match the requests from the pico to the WebApi
+>The ip and port needs to match the requests from the Pico to the WebApi
 
-## Puting everything together
+## Putting everything together
 this diagram shows how to connect the sensors to the pico. optionally use the Male to Female cables for the `rotary encoder`.
 ![IoTProjBoard_bb](https://github.com/em-cl/IoT-Project/assets/76754841/b61a564a-2a5f-4c7b-881e-d5b7ed3a0e66)
 
->In order to see changes when you program the MicroPython code turn on autosave in vs code and develeoper mode in the PyMakr tab.
+>In order to see changes when you program the MicroPython code turn on autosave in vs code and developer mode in the PyMakr tab.
 
 ## Electricity.
 
 **PICO W**
 In order to supply the Pico W with power you can either use the VBUS 5V± 10% via Micro USB or feed the VSYS pin from a battery: external source V ∈[1.8,5.5]. A inductor in the pico lowers or raises the Voltage to 3.3V before providing the sensors with power.
 
-for this project this is all you need to know pick one or the other don't use both at the same time. Note that Pico is capable of moore for example: There is a protection diode between VBUS and VSYS that protects against incorrect polarity and backfeeding power into the USB supply as described in [this video](https://www.youtube.com/watch?v=3PH9jzRsb5E). 
-for moore detailed specifications and instructions look at the [datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf).
+for this project this is all you need to know pick one or the other don't use both at the same time. Note that Pico is capable of more for example: There is a protection diode between VBUS and VSYS that protects against incorrect polarity and backfeeding power into the USB supply as described in [this video](https://www.youtube.com/watch?v=3PH9jzRsb5E). 
+for more detailed specifications and instructions look at the [datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf).
  
 If you for some other project want to connect both the micro usb and battery via VSYS at the same time, again please look at the [datasheet](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf) to do this safely.
 
 **DHT11**  
 According to the [Data sheet for DHT11](https://www.electrokit.com/uploads/productfile/41015/DHT11.pdf).  
-The minimum condition status is chosen for its proximity to thhe Pico W Voltage output level.  
+The minimum condition status is chosen for its proximity to the Pico W Voltage output level.  
 V = 3V  
 I<sub>1</sub> = 0,2mA avg  
 Ohms law gives  
@@ -243,16 +243,16 @@ R<sub>1</sub> =  V / I = 3V / 0,2mA = 15kΩ
 
 **HW040**  
 According to the [Data sheet for HW040/KY040](https://www.rcscomponents.kiev.ua/datasheets/ky-040-datasheet.pdf)
-When Clk or DT pin sends 
+When CLk or DT pin sends 
 
 R<sub>2</sub> = 10kΩ  
 V = 3.3V supplied from the Pico W    
 Ohms law gives   
 I<sub>2</sub> = V / R = 3.3V / 10kΩ = 0,33mA
 
-**Parallell Circuit of sensors**  
-The sensors are connected in paralell to the Pico W.  
-The resistance for the sensors in paralell is according to:  
+**Parallel circuit of sensors**  
+The sensors are connected in parallel to the Pico W.  
+The resistance for the sensors in parallel is according to:  
 1/R<sub>s</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub>
 
 R<sub>s</sub> = 1 / (1/R<sub>1</sub> + 1/R<sub>2</sub>) = R<sub>1</sub> * R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>) = 15000 Ω * 10000 Ω / (15000 Ω + 10000 Ω) = 150 000 000 Ω / 25000 Ω = 6000 Ω  
@@ -266,20 +266,20 @@ Sensor circuit total current I<sub>s</sub> = 0,55mA
 
 
 ## Platform
-As previously mentioned im using a .Net stack with Blazor Server frontend.
-It is secure near native performance and helps redering interactive websites with low bandwidth.
-I choose this solution because I wanted to code a scalable project with a responsive dashboard without relying on javascript frameworks like React or Vue. 
+As previously mentioned I’m using a .Net stack with Blazor Server frontend.
+It is secure near native performance and helps rendering interactive websites with low bandwidth.
+I choose this solution because I wanted to code a scalable project with a responsive dashboard without relying on JavaScript frameworks like React or Vue. 
 I also tried using a Clean architecture with DDD typical for microservices for the first time to improve code quality and learn how it works, you can read more [Here](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice.) if you are interested.  
-I am hosting the software on my laptop. It should work well for most enviorments if you whant to put it on a server, because core is cross platform. 
+I am hosting the software on my laptop. It should work well for most environments if you want to put it on a server, because core is cross platform. 
 This project will work as intended without much effort if published on a IIS server.
-The recomended docker image is Linux if you want to try docker support.
+The recommended docker image is Linux if you want to try docker support.
 
 ## Code examples
-From the pico WH to the dashboard, a http GET request are sent containing data from the sensors. 
-The wireless protocol used is Wifi.
+From the Pico WH to the dashboard, a http GET request are sent containing data from the sensors. 
+The wireless protocol used is Wi-Fi.
 The transport layer protocol used is TCP.
-I choose to use this to easily communicate between my laptop and pico like any other api.
-Using wifi in a home is likely free and motivates use of the powerhungry wifi on the Pico, since the IoT device don´t need to run on battery. it can live in a power jack coupeld with a transformer to reduce the voltage and talk on the home wifi. To not use a battery increases the lifetime of the IoT device and reduces e waste. The range of the wifi likely covers the entire home enviorment and intended use case.
+I choose to use this to easily communicate between my laptop and Pico like any other API.
+Using wifi in a home is likely free and motivates use of the power hungry Wi-Fi on the Pico, since the IoT device don´t need to run on battery. it can live in a power jack coupled with a transformer to reduce the voltage and talk on the home Wi-Fi. To not use a battery increases the lifetime of the IoT device and reduces e waste. The range of the Wi-Fi likely covers the entire home environment and intended use case.
 
 **Getting sensor data**
 
@@ -371,8 +371,8 @@ def temperature_and_humidity_sensor():
 
 C# code
 
-1. The TCP socket is used to send http Get requests to the Rest API over the wifi.
-2. The Rest Api recives the json array and starts a command using the data.   
+1. The TCP socket is used to send http Get requests to the Rest API over the Wi-Fi.
+2. The Rest Api receives the Json array and starts a command using the data.   
 ```C#
 	` [HttpGet("Test")]
 		// GET: 
@@ -394,7 +394,7 @@ C# code
 			return Ok(data);
 		}
 ```
-3. The string is deserialized to data tranfer objects and converted to domain objects, then checked for duplicates and saved in the database. If every thing was correct the new  measurements are published in memory as a MediatR notification.
+3. The string is deserialized to data transfer objects and converted to domain objects, then checked for duplicates and saved in the database. If everything was correct the new measurements are published in memory as a MediatR notification.
 ```C#
 	public record SaveBatchCommand (string Data) : IRequest<IEnumerable<Measurement>>
 	{
@@ -525,7 +525,7 @@ And that is how the real time data is handeld.
 
 In addition
 
-The data is stored in a static Queue with unique items to reduce the amount of calls to the database. If you are going to have multiple users/MicroControllers make a user state instead with the same functionality.
+The data is stored in a static Queue with unique items to reduce the amount of calls to the database. If you are going to have multiple users/Microcontrollers make a user state instead with the same functionality.
 ```C#
 		public static Queue<Measurement> FifoQueue { get; set; } = new();
 		public static HashSet<Measurement> UniqueSet { get; set; } = new();
@@ -618,12 +618,12 @@ This method converts the measurements to polyline used in the line charts
 
 >DHT11
 
-The green areas indicates the changes in temperature and humidity, the yellow and magenta lines shows the adjustable thresholds where automatic notifications are sent via mail when measurments exceeds them. the cache size "number of measurements" is adjustable. There is a second notificationhandler that triggers on the  BatchSaved notification published event, that logs to debug output and console.  
+The green areas indicate the changes in temperature and humidity, the yellow and magenta lines shows the adjustable thresholds where automatic notifications are sent via mail when measurements exceeds them. the cache size "number of measurements" is adjustable. There is a second notification handler that triggers on the  BatchSaved notification published event, that logs to debug output and console.  
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/0389999e-1730-4b56-abc4-ef3c61c115da)
 
 >HW-040.
 
-The dash board for the rotoary encoder shows X time and Y number of measurements.
+The dashboard for the rotary encoder shows X time and Y number of measurements.
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/bd3ce31e-9370-4152-9273-281d462152a3)
 
 **Database**
@@ -631,14 +631,14 @@ The project uses a relational database created code first with generated migrati
 using migration scripts allows for easy testing and updates to the database on server when the software is published.
 This is useful when building integration tests. Developers can easily create databases with the scripts to run separate identical databases with different data in production, test and development environments.
 
-EntityFramework core with a SQL relational database was used because it is fast to build and easy to maintain.
-A reltational database is also storage efficient if the program grows in the future. 
+Entity Framework Core with a SQL relational database was used because it is fast to build and easy to maintain.
+A relational database is also storage efficient if the program grows in the future. 
 
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/706d1931-d30e-414b-b145-cda8ddbd99db)
 
 >The project uses the Unit of Work design pattern with the Repository designpattern for the data access code.
 
-Compiled queries improves preformance slightly and makes the data access code compact and easy to read. 
+Compiled queries improve performance slightly and makes the data access code compact and easy to read. 
 
 ```C#
  private static readonly Func<CleanDbContext, int, IAsyncEnumerable<TraceLogDto>>
@@ -657,11 +657,11 @@ Compiled queries improves preformance slightly and makes the data access code co
 				        .AsNoTracking());
 ```
 
-IAsyncenumerable makes it possible to display items as they are yield returned from database so the ui dont freeze when the database grows. 
+IAsyncenumerable makes it possible to display items as they are yield returned from database, so the UI don´t freeze when the database grows. 
 
 Data is saved  every time a request arrives before it is displayed to the dashboard as mentioned earlier with a maximum speed of once every 3 seconds. i added this limitation because indoor temperature and humidity take a couple of seconds to change to not waste computing power.
-I think less frequent measurements would also be fine for this project but the debugging would take longer and the dashboard will take a while to fill up while testing.  
-there is no  functionality in the project to periodically remove data this is suggested for continued development of the project, in order to save space.
+I think less frequent measurements would also be fine for this project, but the debugging would take longer, and the dashboard will take a while to fill up while testing.  
+there is no functionality in the project to periodically remove data this is suggested for continued development of the project, to save space.
 
 >The mail notification
 
