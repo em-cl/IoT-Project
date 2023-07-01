@@ -262,7 +262,7 @@ Sensor circuit Voltage V<sub>s</sub> = 3.3V,
 Sensor circuit total resistance R<sub>s</sub> = 6kΩ,  
 Sensor circuit total current I<sub>s</sub> = 0,55mA  
 
-![image](https://github.com/em-cl/IoT-Project/assets/76754841/be2ede35-23be-4862-9b05-3fe263f5f487)
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/43b06bce-6028-49e3-863b-29f775ee926c)
 
 
 ## Platform
