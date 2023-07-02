@@ -674,7 +674,7 @@ there is no functionality in the project to periodically remove data this is sug
 **The Breadboard IRL**
 
 
-**Demo Video**
+**Demo Video** [if image don´t open a link to the video press here!](https://youtu.be/GtIQFoNZHAY)
 
 [![Image](https://github.com/em-cl/IoT-Project/assets/76754841/71f94ae5-8e10-479f-8852-1f20a6de6994)](https://youtu.be/GtIQFoNZHAY)
 
