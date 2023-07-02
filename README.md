@@ -274,12 +274,13 @@ I am hosting the software on my laptop. It should work well for most environment
 This project will work as intended without much effort if published on a IIS server.
 The recommended docker image is Linux if you want to try docker support.
 
-## Code examples
+## Transmitting Data and Code examples
 From the Pico WH to the dashboard, a http GET request are sent containing data from the sensors. 
 The wireless protocol used is Wi-Fi.
 The transport layer protocol used is TCP.
 I choose to use this to easily communicate between my laptop and Pico like any other API.
-Using wifi in a home is likely free and motivates use of the power hungry Wi-Fi on the Pico, since the IoT device don´t need to run on battery. it can live in a power jack coupled with a transformer to reduce the voltage and talk on the home Wi-Fi. To not use a battery increases the lifetime of the IoT device and reduces e waste. The range of the Wi-Fi likely covers the entire home environment and intended use case.
+Using wifi in a home is likely free and motivates use of the power hungry Wi-Fi on the Pico, since the IoT device don´t need to run on battery. it can live in a power jack coupled with a transformer to reduce the voltage and talk on the home Wi-Fi. To not use a battery increases the lifetime of the IoT device and reduces e waste. The range of the Wi-Fi likely covers the entire home environment and intended use case. with http it is less secure then https. the .Net stack can run both and have self signed certificates.
+The mail function uses TLS and SMTP and is secure. 
 
 **Getting sensor data**
 
