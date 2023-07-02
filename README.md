@@ -667,6 +667,15 @@ there is no functionality in the project to periodically remove data this is sug
 
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/558912bd-3ef5-4cba-a843-eb1c96ee4359)
 
+## Finalizing the design
+
+>I am happy with the outcome of the project. The digital artefact and IoT device can still be improved with caseing for the sensors and more functionality like maybe a light sensor, some of the code like the values stored in memory retaining state needs to be made more user specific. In the future perhaps I will extend the project to be a content management system for multiple sensors and micro controllers in my home to make it better. It was fun try programming in MicroPython for the first time.
+
+**The Breadboard IRL**
+
+
+**Video**
+
 
 
 
