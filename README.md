@@ -644,7 +644,10 @@ This method converts the measurements to polyline used in the line charts
 
 >DHT11
 
-The green areas indicate the changes in temperature and humidity, the yellow and magenta lines shows the adjustable thresholds where automatic notifications are sent via mail when measurements exceeds them. the cache size "number of measurements" is adjustable. There is a second notification handler that triggers on the  BatchSaved notification published event, that logs to debug output and console.  
+The green areas indicate the changes in temperature and humidity, 
+
+**Automation/triggers of the data**  
+The yellow and magenta lines shows the adjustable thresholds where automatic notifications are sent via mail when measurements exceeds them. the cache size "number of measurements" is adjustable. There is a second notification handler that triggers on the  BatchSaved notification published event, that logs to debug output and console.  
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/0389999e-1730-4b56-abc4-ef3c61c115da)
 
 >HW-040.
@@ -652,7 +655,7 @@ The green areas indicate the changes in temperature and humidity, the yellow and
 The dashboard for the rotary encoder shows X time and Y number of measurements.
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/bd3ce31e-9370-4152-9273-281d462152a3)
 
-**Database**
+**Choise of database**
 The project uses a relational database created code first with generated migration scripts.
 using migration scripts allows for easy testing and updates to the database on server when the software is published.
 This is useful when building integration tests. Developers can easily create databases with the scripts to run separate identical databases with different data in production, test and development environments.
@@ -685,6 +688,8 @@ Compiled queries improve performance slightly and makes the data access code com
 
 IAsyncenumerable makes it possible to display items as they are yield returned from database, so the UI don´t freeze when the database grows. 
 
+**How often is data saved**
+
 Data is saved  every time a request arrives before it is displayed to the dashboard as mentioned earlier with a maximum speed of once every 3 seconds. i added this limitation because indoor temperature and humidity take a couple of seconds to change to not waste computing power.
 I think less frequent measurements would also be fine for this project, but the debugging would take longer, and the dashboard will take a while to fill up while testing.  
 there is no functionality in the project to periodically remove data this is suggested for continued development of the project, to save space.
@@ -694,13 +699,14 @@ there is no functionality in the project to periodically remove data this is sug
 ![image](https://github.com/em-cl/IoT-Project/assets/76754841/558912bd-3ef5-4cba-a843-eb1c96ee4359)
 
 ## Finalizing the design
-
 >I am happy with the outcome of the project. The digital artefact and IoT device can still be improved with caseing for the sensors and more functionality like maybe a light sensor, some of the code like the values stored in memory retaining state needs to be made more user specific. In the future perhaps I will extend the project to be a content management system for multiple sensors and micro controllers in my home to make it better. It was fun try programming in MicroPython for the first time.
 
 **Demo Video** [if image don´t open a link to the video press here!](https://youtu.be/GtIQFoNZHAY)
 
 [![Image](https://github.com/em-cl/IoT-Project/assets/76754841/71f94ae5-8e10-479f-8852-1f20a6de6994)](https://youtu.be/GtIQFoNZHAY)
 
+**The device IRL**
+![image](https://github.com/em-cl/IoT-Project/assets/76754841/9131f7d0-50ea-48f2-a595-9bdf9bb3d1ff)
 
 
 
