@@ -289,7 +289,9 @@ The mail function uses TLS and SMTP and is secure this requires a google account
 
 MicroPython code
 
-Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request is sent. This is the code for the rotary encoder that reads left or right rotation, the rotations absolute position left or right, is used in the life loop to adjust number of measurements collected.
+_How often is the data sent?_
+Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request is sent.  
+This is the code for the rotary encoder that reads left or right rotation, the rotations absolute position left or right, is used in the life loop to adjust number of measurements collected.
 ```Python
 def rotaryComponent():
     #constants
@@ -373,9 +375,29 @@ def temperature_and_humidity_sensor():
 
 **Data flow**
 
-C# code
+1. The TCP socket is used to send http Get requests to the Rest API over the Wi-Fi. 
+```Python
+def get_http(message=""):
+    import socket
+    host = secrets.secrets["ip"]
+    path = '/api/Measurement/Test?data={}'.format(message)
+    
+    # start TCP connection
+    sock = socket.socket()
+    addr = socket.getaddrinfo(host, secrets.secrets["port"])[0][-1]
+    sock.connect(addr)
 
-1. The TCP socket is used to send http Get requests to the Rest API over the Wi-Fi.
+    # Send GET request
+    sock.send("GET {} HTTP/1.1\r\nHost: {}\r\nAccept: */*\r\n\r\n".format(path, host))
+    # Api response
+    response = sock.recv(4096).decode("utf-8")
+    print(response)
+    
+    #close TCP connection
+    sock.close()
+```
+**C# code**
+
 2. The Rest Api receives the Json array and starts a command using the data.   
 ```C#
 	` [HttpGet("Test")]
@@ -463,7 +485,7 @@ This is the notification. A notification can have many notification handlers tha
 ```C#
 	public record BatchSavedEvent(List<Measurement> Measurements) : INotification;
 ```
-4. The notification handler populates the charts in the Blazor pages and Blazor components "the dashboard" with data and updates the page.
+3. The notification handler populates the charts in the Blazor pages and Blazor components "the dashboard" with data and updates the page.
 The component `@implements INotificationHandler<BatchSavedEvent>` in order for this to work.
 ```C#
   	protected override async Task OnInitializedAsync()
