@@ -275,18 +275,21 @@ This project will work as intended without much effort if published on a IIS ser
 The recommended docker image is Linux if you want to try docker support.
 
 ## Transmitting Data and Code examples
-From the Pico WH to the dashboard, a http GET request are sent containing data from the sensors. 
-The wireless protocol used is Wi-Fi.
-The transport layer protocol used is TCP.
-I choose to use this to easily communicate between my laptop and Pico like any other API.
-Using wifi in a home is likely free and motivates use of the power hungry Wi-Fi on the Pico, since the IoT device don´t need to run on battery. it can live in a power jack coupled with a transformer to reduce the voltage and talk on the home Wi-Fi. To not use a battery increases the lifetime of the IoT device and reduces e waste. The range of the Wi-Fi likely covers the entire home environment and intended use case. with http it is less secure then https. the .Net stack can run both and have self signed certificates.
-The mail function uses TLS and SMTP and is secure. 
+From the Pico WH to the dashboard, a http GET request are sent containing data from the sensors.  
+The wireless protocol used is Wi-Fi.  
+The transport layer protocol used is TCP.  
+I choose to use this to easily communicate between my laptop and Pico using a Rest API.  
+**Power and reception**  
+Using wifi in a home is likely free and motivates use of the power hungry Wi-Fi component on the Pico, since the device don´t need to run on battery. it can live in a power jack coupled with a transformer to reduce the voltage and talk on the home Wi-Fi. To not use a battery increases the lifetime of the IoT device and reduces e waste. The range of the Wi-Fi likely covers the entire home environment and intended use case.  
+**security**
+The project works with http or https but uses http, http is less secure then https. HTTPS uses self signed certificates "or trusted certificates from real certificate authorities if you need to have them". if you want to set up https for the pico please look at the [documentation here](https://docs.micropython.org/en/latest/library/ssl.html).  
+The mail function uses TLS and SMTP and is secure this requires a google account with 2 step verification and application password to work with google.
 
 **Getting sensor data**
 
 MicroPython code
 
-Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request is sent. This is the code for the rotary encoder that adjusts measurements collected.
+Every 3 seconds measurements are recorded. The rotary encoder adjusts how many measurements are collected before a HTTP request is sent. This is the code for the rotary encoder that reads left or right rotation, the rotations absolute position left or right, is used in the life loop to adjust number of measurements collected.
 ```Python
 def rotaryComponent():
     #constants
