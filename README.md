@@ -166,7 +166,8 @@ the recommended IDE:s used for this project are `Visual studio code` and `Visual
 
 >Optional for comfort 
 
-I use vs code and Visual studio for the familiar key binds which gives that are ergonomic. (Free!) I also recomend to try the free VsVim 2022, Add New File and Editor Guidelines extensions in visual studio.
+I use vs code and Visual Studio for the familiar key binds and user interface and functionality. (Free!) I also recomend to try the free VsVim 2022, Add New File and Editor Guidelines extensions in visual studio.  
+if you have the money for it the best extension for speeding up the coding process you can get for Visual Studio is Reesharper. That said, you don't need Reesharper to build a small project like this.
 
 >Required
 
@@ -216,6 +217,17 @@ use with nugets packages: Mock and Fluent Assertions.
     - if you don’t have a static ip-address you can run ncpa.cpl on Windows if you want to and add one.
 
 >The ip and port needs to match the requests from the Pico to the WebApi
+
+**Step by step uploading code to the Pico**
+- connect the pico with the usb end of the micro usb cable to the computer.
+- In the PymMakR extension tab in Visual Studio code add the pico device it should show up as the name of the usb port its connected to.
+- Connect the device by pressing the lightning and create the terminal by presing the create terminal icon next to it.
+- Hower over the project name in the extension tab and start development mode
+- Turn on auto save under file > auto save in visual studio code.
+
+> The code will automatically update when you type new code.  
+> if you need to restart the app press ctrl + c in terminal and then save the code to start the application.
+> Might be obvious but start the Api before the Pico request sends or it will not work ;)
 
 ## Putting everything together
 this diagram shows how to connect the sensors to the pico. optionally use the Male to Female cables for the `rotary encoder`.
