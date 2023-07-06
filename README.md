@@ -266,13 +266,7 @@ Sensor circuit total current I<sub>s</sub> = 0,55mA
 
 
 ## Platform
-As previously mentioned I’m using a .Net stack with Blazor Server frontend.
-It is secure near native performance and helps rendering interactive websites with low bandwidth.
-I choose this solution because I wanted to code a scalable project with a responsive dashboard without relying on JavaScript frameworks like React or Vue. 
-I also tried using a Clean architecture with DDD typical for microservices for the first time to improve code quality and learn how it works, you can read more [Here](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice.) if you are interested.  
-I am hosting the software on my laptop. It should work well for most environments if you want to put it on a server, because core is cross platform. 
-This project will work as intended without much effort if published on a IIS server.
-The recommended docker image is Linux if you want to try docker support.
+As previously mentioned, I'm using a .Net stack with a combination of project types: Asp .Net Core WebAPI, Class Libraries and Blazor Server to build my website. It's secure, performs well, and allows me to create interactive websites that load quickly even with slow internet. the Api uses swagger and is easy to Test, I chose this solution because I wanted to build a scalable project with a responsive dashboard without using JavaScript frameworks like React or Vue. I also used a software design pattern called Clean Architecture with Domain-Driven Design to improve the code quality and learn more about it. If you're interested, you can read more about it [Here](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice.). I'm currently hosting the software on my laptop, but it can work well on most servers because it's cross-platform. If you want to try using Docker, the recommended Docker image is based on Linux.
 
 ## Transmitting Data and Code examples
 From the Pico WH to the dashboard, a http GET request are sent containing data from the sensors.  
