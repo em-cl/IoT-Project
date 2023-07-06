@@ -227,7 +227,7 @@ use with nugets packages: Mock and Fluent Assertions.
 
 > The code will automatically update when you type new code.  
 > if you need to restart the app press ctrl + c in terminal and then save the code to start the application.
-> Might be obvious but start the Api before the Pico request sends or it will not work ;)
+> Might be obvious but start the Api before the Pico sends requests or it will not work ;)
 
 ## Putting everything together
 this diagram shows how to connect the sensors to the pico. optionally use the Male to Female cables for the `rotary encoder`.
